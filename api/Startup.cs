@@ -27,6 +27,17 @@ namespace api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //TODO: deal w/ CORS
+            services.AddCors(options =>
+                    {
+                        options.AddDefaultPolicy(
+                            builder =>
+                            {
+                                builder.WithOrigins("http://localhost:8080"
+                                                    );
+                            });
+                    });
+
             services.AddDbContext<SiteSurveyContext>(opt =>
                opt.UseSqlite("Data Source=localDb/sqlite.db"));
             services.AddControllers();
@@ -40,9 +51,12 @@ namespace api
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            // TODO: not this
+           // app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthorization();
 
