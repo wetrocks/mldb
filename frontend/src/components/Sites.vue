@@ -14,6 +14,7 @@
     </div>
     <hr />
     <div>{{ info }}</div>
+    <div>error: {{ err }}</div>
   </div>
 </template>
 
@@ -27,7 +28,8 @@ export default {
   },
   data () {
     return {
-      info: null
+      info: null,
+      err: null
     }
   },
     mounted () {
@@ -37,6 +39,9 @@ export default {
           console.log(response);
           this.info = response.data;}
           )
+      .catch(error => {
+        this.err = error;
+      })
   }
 }
 </script>
