@@ -24,14 +24,14 @@ namespace api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Survey>>> GetSurvey()
         {
-            return await _context.Survey.ToListAsync();
+            return await _context.Surveys.ToListAsync();
         }
 
         // GET: api/Survey/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Survey>> GetSurvey(Guid id)
         {
-            var survey = await _context.Survey.FindAsync(id);
+            var survey = await _context.Surveys.FindAsync(id);
 
             if (survey == null)
             {
@@ -79,7 +79,7 @@ namespace api.Controllers
         [HttpPost]
         public async Task<ActionResult<Survey>> PostSurvey(Survey survey)
         {
-            _context.Survey.Add(survey);
+            _context.Surveys.Add(survey);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetSurvey", new { id = survey.Id }, survey);
@@ -89,13 +89,13 @@ namespace api.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Survey>> DeleteSurvey(Guid id)
         {
-            var survey = await _context.Survey.FindAsync(id);
+            var survey = await _context.Surveys.FindAsync(id);
             if (survey == null)
             {
                 return NotFound();
             }
 
-            _context.Survey.Remove(survey);
+            _context.Surveys.Remove(survey);
             await _context.SaveChangesAsync();
 
             return survey;
@@ -103,7 +103,7 @@ namespace api.Controllers
 
         private bool SurveyExists(Guid id)
         {
-            return _context.Survey.Any(e => e.Id == id);
+            return _context.Surveys.Any(e => e.Id == id);
         }
     }
 }
