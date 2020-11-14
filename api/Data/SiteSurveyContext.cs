@@ -10,5 +10,7 @@ namespace MLDB.Models
         }
 
         public DbSet<Site> Sites { get; set; }
+
+        public DbSet<Survey> Surveys { get; set; }
     }
 }
