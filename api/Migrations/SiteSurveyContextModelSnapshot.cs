@@ -56,7 +56,7 @@ namespace api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Survey");
+                    b.ToTable("Surveys");
                 });
 #pragma warning restore 612, 618
         }

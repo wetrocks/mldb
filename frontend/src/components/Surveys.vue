@@ -1,15 +1,19 @@
 <template>
   <div>
-      <button v-on:click="loaddata">Refresh</button>
-      <h1>Sites</h1>
-      Here are my sites
+    <button v-on:click="loaddata">Refresh</button>
+      <h1>Surveys</h1>
+      Here are my surveys
     <div>
         <table>
             <tr>
                 <th>Name</th>
+                <th>Date</th>
+                <th>Volunteer Count</th>
             </tr>
-            <tr v-for="site in info" :key="site.id">
-                <td> {{site.named}} </td>
+            <tr v-for="survey in info" :key="survey.id">
+                <td> {{survey.coordinator}} </td>
+                <td> {{survey.date}} </td>
+                <td> {{survey.volunteerCount}} </td>
             </tr>
         </table>
     </div>
@@ -23,7 +27,7 @@
 import axios from "axios";
 
 export default {
-  name: 'Sites',
+  name: 'Surveys',
   props: {
 
   },
@@ -34,12 +38,12 @@ export default {
     }
   },
   mounted () {
-      this.loaddata();
+     // this.loaddata();
   },
   methods: {
     loaddata: function () {
       axios
-          .get('http://localhost:5000/api/site')
+          .get('http://localhost:5000/api/survey')
           .then(response => {
               console.log(response);
               this.info = response.data;}

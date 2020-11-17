@@ -20,7 +20,7 @@ namespace api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Survey",
+                name: "Surveys",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -33,7 +33,7 @@ namespace api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Survey", x => x.Id);
+                    table.PrimaryKey("PK_Surveys", x => x.Id);
                 });
         }
 
@@ -43,7 +43,7 @@ namespace api.Migrations
                 name: "Sites");
 
             migrationBuilder.DropTable(
-                name: "Survey");
+                name: "Surveys");
         }
     }
 }
