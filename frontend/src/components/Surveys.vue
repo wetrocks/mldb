@@ -1,7 +1,15 @@
 <template>
   <div>
-    <button v-on:click="loaddata">Refresh</button>
+      <input v-model="coordinator" placeholder="coordinator">
+      <input type="date" v-model="date" placeholder="date">
+      <input type="number" step="1" v-model="count" placeholder="count">
+
+      <input type="time" placeholder="Start Time">
+
+      <button v-on:click="savedata">Save</button>
+      <hr />
       <h1>Surveys</h1>
+      <button v-on:click="loaddata">Refresh</button>
       Here are my surveys
     <div>
         <table>
@@ -34,7 +42,10 @@ export default {
   data () {
     return {
       info: null,
-      err: null
+      err: null,
+      coordinator: null,
+      date: null,
+      count: null,
     }
   },
   mounted () {
@@ -48,6 +59,24 @@ export default {
               console.log(response);
               this.info = response.data;}
               )
+          .catch(error => {
+            this.err = error;
+          })
+    },
+    savedata: function() {
+      let newSurvey= {
+        coordinator: this.coordinator,
+        date: this.date,
+        count: this.count,
+      };
+
+      console.log(newSurvey);
+
+      axios
+          .post('http://localhost:5000/api/survey', newSurvey)
+          .then(response => {
+            console.log(response);
+          }) 
           .catch(error => {
             this.err = error;
           })

@@ -2,6 +2,10 @@
   <div>
       <button v-on:click="loaddata">Refresh</button>
       <h1>Sites</h1>
+      <hr />
+      <input v-model="name" placeholder="name">
+      <p>Name is: {{ name }}</p>  
+      <button v-on:click="savedata">Save</button>
       Here are my sites
     <div>
         <table>
@@ -29,6 +33,7 @@ export default {
   },
   data () {
     return {
+      name: null,
       info: null,
       err: null
     }
@@ -44,6 +49,22 @@ export default {
               console.log(response);
               this.info = response.data;}
               )
+          .catch(error => {
+            this.err = error;
+          })
+    },
+    savedata: function() {
+      let newSite = {
+        named: this.name
+      };
+
+      console.log(newSite);
+
+      axios
+          .post('http://localhost:5000/api/site', newSite)
+          .then(response => {
+            console.log(response);
+          }) 
           .catch(error => {
             this.err = error;
           })
