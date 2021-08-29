@@ -1,9 +1,5 @@
 <template>
   <div class="hello">
-     <div><router-link to="/Sites">Go to Sites</router-link></div>
-    <div> <router-link to="/Surveys">Go to Surveys</router-link></div>
-        <div> <router-link to="/SiteSurvey">Go to SiteSurvey</router-link></div>
-
     <h1>{{ msg }}</h1>
     <p>
       For a guide and recipes on how to configure / customize this project,<br>

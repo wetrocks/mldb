@@ -1,9 +1,11 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import Vue from 'vue'
+import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-import Sites from '../components/Sites.vue'
-import Surveys from '../components/Surveys.vue'
-import SiteSurvey from '../views/SiteSurvey.vue'
 
+import Profile from "../views/Profile.vue";
+import { authGuard } from "../auth/authGuard";
+
+Vue.use(VueRouter)
 
 const routes = [
   {
@@ -19,13 +21,17 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
-  { path: '/Sites', component: Sites },
-  { path: '/Surveys', component: Surveys },
-  { path: '/SiteSurvey', component: SiteSurvey },
+  {
+    path: "/profile",
+    name: "profile",
+    component: Profile,
+    beforeEnter: authGuard
+  }
 ]
 
-const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+const router = new VueRouter({
+  mode: 'history',
+  base: process.env.BASE_URL,
   routes
 })
 
