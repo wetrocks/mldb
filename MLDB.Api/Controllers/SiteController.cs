@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MLDB.Models;
+using System.Security.Claims;
 
 namespace api.Controllers
 {
@@ -24,6 +25,7 @@ namespace api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Site>>> GetSites()
         {
+            var hctx = HttpContext;
             return await _context.Sites.ToListAsync();
         }
 
@@ -79,6 +81,10 @@ namespace api.Controllers
         [HttpPost]
         public async Task<ActionResult<Site>> PostSite(Site site)
         {
+            var user = HttpContext.User.Claims.First( x => x.Type == ClaimTypes.NameIdentifier);
+            
+            site.CreatedBy = user.Value;
+            site.CreateTimestamp = DateTime.UtcNow;
             _context.Sites.Add(site);
             await _context.SaveChangesAsync();
 

@@ -12,7 +12,9 @@ namespace api.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Named = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: true),
+                    CreatedBy = table.Column<string>(nullable: true),
+                    CreateTimestamp = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {

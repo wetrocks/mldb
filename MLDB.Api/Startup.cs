@@ -15,6 +15,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using MLDB.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
 
 namespace api
 {
@@ -38,6 +40,12 @@ namespace api
             {
                 options.Authority = Configuration["Authentication:Domain"];
                 options.Audience = Configuration["Authentication:Audience"];
+
+                // If the access token does not have a `sub` claim, `User.Identity.Name` will be `null`. Map it to a different claim by setting the NameClaimType below.
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    NameClaimType = ClaimTypes.NameIdentifier
+                };
             });
     
             //TODO: deal w/ CORS
@@ -47,6 +55,10 @@ namespace api
                             builder =>
                             {
                                 builder.WithOrigins("http://localhost:8080"
+                                                    )
+                                                    .AllowAnyMethod()
+                                                    .AllowAnyHeader();
+                                builder.WithOrigins("http://localhost:3000"
                                                     )
                                                     .AllowAnyMethod()
                                                     .AllowAnyHeader();
