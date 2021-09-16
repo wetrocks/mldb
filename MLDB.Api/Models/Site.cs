@@ -1,10 +1,16 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
-public class Site {
-    public Guid Id{ get; set; }
-    public string Name{ get; set; }
+namespace MLDB.Api.Models
+{
+    public class Site {
+        [Key]
+        public Guid Id{ get; set; }
+        
+        public string Name{ get; set; }
 
-    public string CreatedBy{ get; set; }
+        public User CreateUser{ get; set; }
 
-    public  DateTime CreateTimestamp { get; set; }
+        public  DateTime CreateTimestamp { get; set; }
+    }
 }

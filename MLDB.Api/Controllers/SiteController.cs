@@ -5,27 +5,29 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MLDB.Models;
+using MLDB.Api.Models;
 using System.Security.Claims;
+using MLDB.Api.Services;
 
-namespace api.Controllers
+namespace MLDB.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class SiteController : ControllerBase
     {
         private readonly SiteSurveyContext _context;
+        private readonly IUserService _userSvc;
 
-        public SiteController(SiteSurveyContext context)
+        public SiteController(SiteSurveyContext context,  IUserService userService)
         {
             _context = context;
+            _userSvc = userService;
         }
 
         // GET: api/Site
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Site>>> GetSites()
         {
-            var hctx = HttpContext;
             return await _context.Sites.ToListAsync();
         }
 
@@ -79,12 +81,19 @@ namespace api.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Site>> PostSite(Site site)
+        public async Task<ActionResult<Site>> PostSite([FromBody]Site site)
         {
-            var user = HttpContext.User.Claims.First( x => x.Type == ClaimTypes.NameIdentifier);
-            
-            site.CreatedBy = user.Value;
+            var user = _userSvc.createFromClaimsPrinicpal(HttpContext.User);
+
+            var foundUser = await _context.Users.FindAsync(user.IdpId);
+
+            if( foundUser != null ) {
+                site.CreateUser = foundUser;
+            } else {
+                site.CreateUser = user;
+            }
             site.CreateTimestamp = DateTime.UtcNow;
+
             _context.Sites.Add(site);
             await _context.SaveChangesAsync();
 

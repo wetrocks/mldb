@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace MLDB.Models
+using MLDB.Api.Models;
+
+namespace MLDB.Api.Models
 {
     public class SiteSurveyContext : DbContext
     {
@@ -12,5 +14,7 @@ namespace MLDB.Models
         public DbSet<Site> Sites { get; set; }
 
         public DbSet<Survey> Surveys { get; set; }
+
+        public DbSet<User> Users { get;  set; }
     }
 }

@@ -13,12 +13,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
-using MLDB.Models;
+using MLDB.Api.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using MLDB.Api.Services;
 
-namespace api
+namespace MLDB.Api
 {
     public class Startup
     {
@@ -32,6 +34,9 @@ namespace api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvcCore()
+                    .AddApiExplorer();
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -77,6 +82,13 @@ namespace api
 
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "MLDB App API", Version = "v1" });
+            });
+
+            services.AddScoped<IUserService, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -101,6 +113,14 @@ namespace api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "MLDB App API");
+                c.RoutePrefix = string.Empty;
             });
         }
     }

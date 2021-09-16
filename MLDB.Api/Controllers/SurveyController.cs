@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MLDB.Models;
+using MLDB.Api.Models;
 
-namespace api.Controllers
+namespace MLDB.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
