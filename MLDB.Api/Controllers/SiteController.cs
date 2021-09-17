@@ -17,11 +17,13 @@ namespace MLDB.Api.Controllers
     {
         private readonly SiteSurveyContext _context;
         private readonly IUserService _userSvc;
+        private readonly ISiteService  _siteSvc;
 
-        public SiteController(SiteSurveyContext context,  IUserService userService)
+        public SiteController(SiteSurveyContext context,  IUserService userService, ISiteService siteService)
         {
             _context = context;
             _userSvc = userService;
+            _siteSvc = siteService;
         }
 
         // GET: api/Site
@@ -83,21 +85,9 @@ namespace MLDB.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<Site>> PostSite([FromBody]Site site)
         {
-            var user = _userSvc.createFromClaimsPrinicpal(HttpContext.User);
-
-            var foundUser = await _context.Users.FindAsync(user.IdpId);
-
-            if( foundUser != null ) {
-                site.CreateUser = foundUser;
-            } else {
-                site.CreateUser = user;
-            }
-            site.CreateTimestamp = DateTime.UtcNow;
-
-            _context.Sites.Add(site);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetSite", new { id = site.Id }, site);
+            var createdSite = await _siteSvc.create(site, HttpContext.User);
+           
+            return CreatedAtAction("GetSite", new { id = createdSite.Id }, createdSite);
         }
 
         // DELETE: api/Site/5

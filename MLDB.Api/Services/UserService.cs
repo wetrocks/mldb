@@ -19,9 +19,8 @@ namespace MLDB.Api.Services
         }
 
         public User createFromClaimsPrinicpal(ClaimsPrincipal principal) {
-            var user = new User();
+            var user = new User(getIdPId(principal));
             
-            user.IdpId = getIdPId(principal);
             user.Name = principal.Claims.SingleOrDefault(x => x.Type.Equals(IUserService.NAME_CLAIMTYPE))?.Value;
             user.Email = principal.Claims.SingleOrDefault(x => x.Type.Equals(IUserService.EMAIL_CLAIMTYPE))?.Value;
             if( user.Email != null ) {

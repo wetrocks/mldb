@@ -89,6 +89,7 @@ namespace MLDB.Api
             });
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ISiteService, SiteService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

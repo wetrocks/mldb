@@ -10,7 +10,7 @@ using MLDB.Api.Models;
 
 namespace MLDB.Api.Tests.ServiceTests
 {
-    public class Tests
+    public class UserServiceTests
     {
         private IUserService testSvc;
 
@@ -39,8 +39,7 @@ namespace MLDB.Api.Tests.ServiceTests
             var ctx = new SiteSurveyContext(options);
             ctx.Database.EnsureCreated();
 
-            User newUser = new User();
-            newUser.IdpId = "testIdpUserName";
+            User newUser = new User("testIdpUserName");
             ctx.Add(newUser);
             ctx.SaveChanges();
 
@@ -56,7 +55,6 @@ namespace MLDB.Api.Tests.ServiceTests
             testUser.Email.Should().Be("test@test.net");
             testUser.EmailVerified.Should().Be(true);
             testUser.Name.Should().Be("First Last");
-
             // close enough
             testUser.CreateTime.Should().BeSameDateAs(System.DateTime.UtcNow);
             testUser.UpdateTime.Should().Be(System.DateTime.MinValue);
