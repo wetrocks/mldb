@@ -95,6 +95,5 @@ namespace MLDB.Api.Tests.ServiceTests
             var createdUser = testCtx.Users.Find(TEST_USER);
             createdUser.Should().NotBe(null);
         }
-
     }
 }

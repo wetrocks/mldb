@@ -1,6 +1,9 @@
 using MLDB.Api.Models;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace MLDB.Api.Services
@@ -13,6 +16,14 @@ namespace MLDB.Api.Services
         public SiteService(SiteSurveyContext context, IUserService userService) { 
             _dbCtx = context;
             _userSvc = userService;
+        }
+
+        public async Task<List<Site>> getAll() {
+            return await _dbCtx.Sites.ToListAsync();
+        }
+
+        public async Task<Site> find(Guid id) {
+            return await _dbCtx.Sites.FindAsync(id);
         }
 
         public async Task<Site> create(Site site, ClaimsPrincipal userPrinciple) {

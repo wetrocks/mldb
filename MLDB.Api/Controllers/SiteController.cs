@@ -30,14 +30,15 @@ namespace MLDB.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Site>>> GetSites()
         {
-            return await _context.Sites.ToListAsync();
+            //return await _context.Sites.ToListAsync();
+            return await _siteSvc.getAll();
         }
 
         // GET: api/Site/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Site>> GetSite(Guid id)
         {
-            var site = await _context.Sites.FindAsync(id);
+            var site = await _siteSvc.find(id);
 
             if (site == null)
             {
