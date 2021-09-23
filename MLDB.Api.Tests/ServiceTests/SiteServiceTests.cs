@@ -40,6 +40,28 @@ namespace MLDB.Api.Tests.ServiceTests
         }
 
         [Test]
+        public async Task find_returnsSite_WhenExists()
+        {
+            const string TEST_USER = "testUserID";
+            
+            var testSite = new Site();
+            testSite.Id = System.Guid.NewGuid();
+            var testSurvey = new Survey();
+            testSurvey.Date = System.DateTime.Today.ToUniversalTime();
+            testSurvey.SiteId = testSite.Id;
+            testCtx.Add(testSite);
+            testCtx.Add(testSurvey);
+            testCtx.SaveChanges();
+
+            userSvc.Setup( x => x.createFromClaimsPrinicpal(It.IsAny<ClaimsPrincipal>()))
+                   .Returns(new User("testUserID"));
+
+            var foundSite = await testSvc.find(testSite.Id);
+            foundSite.Surveys.Should().HaveCount(1);
+        }
+
+
+        [Test]
         public async Task create_AddsNewSite()
         {
             const string TEST_USER = "testUserID";
@@ -58,7 +80,6 @@ namespace MLDB.Api.Tests.ServiceTests
 
 
             var newSvc = await testSvc.create(testSite, new ClaimsPrincipal());
-
 
             newSvc.Id.Should().NotBe(System.Guid.Empty);
             newSvc.CreateUser.Should().BeEquivalentTo(testUser);
@@ -82,11 +103,7 @@ namespace MLDB.Api.Tests.ServiceTests
             testSite.Name = "siteName";
 
             var newSvc = await testSvc.create(testSite, new ClaimsPrincipal());
-
-            newSvc.Id.Should().NotBe(System.Guid.Empty);
             newSvc.CreateUser.IdpId.Should().Be(TEST_USER);
-            // close enough
-            newSvc.CreateTimestamp.Should().BeSameDateAs(System.DateTime.UtcNow);
 
             // only way to test if saved to db currently
             var createdSite = testCtx.Sites.Find(newSvc.Id);

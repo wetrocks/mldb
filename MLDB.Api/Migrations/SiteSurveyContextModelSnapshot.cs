@@ -47,10 +47,19 @@ namespace MLDB.Api.Migrations
                     b.Property<string>("Coordinator")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Date")
+                    b.Property<DateTime>("CreateTimestamp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreateUserIdpId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("EndTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("SiteId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("StartTime")
@@ -63,6 +72,10 @@ namespace MLDB.Api.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreateUserIdpId");
+
+                    b.HasIndex("SiteId");
 
                     b.ToTable("Surveys");
                 });
@@ -97,6 +110,19 @@ namespace MLDB.Api.Migrations
                     b.HasOne("MLDB.Api.Models.User", "CreateUser")
                         .WithMany()
                         .HasForeignKey("CreateUserIdpId");
+                });
+
+            modelBuilder.Entity("MLDB.Api.Models.Survey", b =>
+                {
+                    b.HasOne("MLDB.Api.Models.User", "CreateUser")
+                        .WithMany()
+                        .HasForeignKey("CreateUserIdpId");
+
+                    b.HasOne("MLDB.Api.Models.Site", null)
+                        .WithMany("Surveys")
+                        .HasForeignKey("SiteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

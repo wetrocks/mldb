@@ -23,7 +23,7 @@ namespace MLDB.Api.Services
         }
 
         public async Task<Site> find(Guid id) {
-            return await _dbCtx.Sites.FindAsync(id);
+            return await _dbCtx.Sites.Include( x => x.Surveys ).SingleOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<Site> create(Site site, ClaimsPrincipal userPrinciple) {

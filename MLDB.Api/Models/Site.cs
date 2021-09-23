@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace MLDB.Api.Models
 {
@@ -12,5 +13,7 @@ namespace MLDB.Api.Models
         public User CreateUser{ get; set; }
 
         public  DateTime CreateTimestamp { get; set; }
+
+        public List<Survey> Surveys { get; set; }
     }
 }

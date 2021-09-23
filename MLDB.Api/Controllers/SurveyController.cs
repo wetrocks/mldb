@@ -6,23 +6,26 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MLDB.Api.Models;
+using MLDB.Api.Services;
 
 namespace MLDB.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/site/{siteId}/survey")]
     [ApiController]
     public class SurveyController : ControllerBase
     {
         private readonly SiteSurveyContext _context;
+        private readonly ISiteSurveyService  _surveySvc;
 
-        public SurveyController(SiteSurveyContext context)
+        public SurveyController(SiteSurveyContext context, ISiteSurveyService surveyService)
         {
             _context = context;
+            _surveySvc = surveyService;
         }
 
         // GET: api/Survey
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Survey>>> GetSurvey()
+        public async Task<ActionResult<IEnumerable<Survey>>> GetSurveys()
         {
             return await _context.Surveys.ToListAsync();
         }
@@ -76,13 +79,12 @@ namespace MLDB.Api.Controllers
         // POST: api/Survey
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPost]
-        public async Task<ActionResult<Survey>> PostSurvey(Survey survey)
+        [HttpPost()]
+        public async Task<ActionResult<Survey>> PostSurvey(Guid siteId, Survey survey)
         {
-            _context.Surveys.Add(survey);
-            await _context.SaveChangesAsync();
+            var newSurvey = await _surveySvc.create(survey, siteId, HttpContext.User);
 
-            return CreatedAtAction("GetSurvey", new { id = survey.Id }, survey);
+            return CreatedAtAction("GetSurvey", new { siteId = newSurvey.SiteId, id = newSurvey.Id }, newSurvey);
         }
 
         // DELETE: api/Survey/5

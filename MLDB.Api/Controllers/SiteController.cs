@@ -30,7 +30,6 @@ namespace MLDB.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Site>>> GetSites()
         {
-            //return await _context.Sites.ToListAsync();
             return await _siteSvc.getAll();
         }
 
