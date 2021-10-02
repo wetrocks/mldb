@@ -42,12 +42,11 @@ namespace MLDB.Api.Tests.ServiceTests
         [Test]
         public async Task find_returnsSite_WhenExists()
         {
-            const string TEST_USER = "testUserID";
             
             var testSite = new Site();
             testSite.Id = System.Guid.NewGuid();
             var testSurvey = new Survey();
-            testSurvey.Date = System.DateTime.Today.ToUniversalTime();
+            testSurvey.StartTimeStamp = System.DateTime.Today.ToUniversalTime();
             testSurvey.SiteId = testSite.Id;
             testCtx.Add(testSite);
             testCtx.Add(testSurvey);

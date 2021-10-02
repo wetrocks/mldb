@@ -63,7 +63,7 @@ namespace MLDB.Api.Tests.ServiceTests
                    .Returns(new User(TEST_USER));
 
             var testSurvey = new Survey();
-            testSurvey.Date = DateTime.Today.ToUniversalTime();
+            testSurvey.StartTimeStamp = DateTime.Today.ToUniversalTime();
 
             var newSurvey = await testSvc.create(testSurvey, testSite.Id, new ClaimsPrincipal());
 
@@ -112,7 +112,7 @@ namespace MLDB.Api.Tests.ServiceTests
                    .Returns(new User("DIFFERENT_USER"));
 
             var testSurvey = new Survey();
-            testSurvey.Date = DateTime.Today.ToUniversalTime();
+            testSurvey.StartTimeStamp = DateTime.Today.ToUniversalTime();
 
             var newSurvey = await testSvc.create(testSurvey, testSite.Id, new ClaimsPrincipal());
             newSurvey.CreateUser.IdpId.Should().Be("DIFFERENT_USER");

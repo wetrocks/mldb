@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using MLDB.Api.Models;
 using System.Security.Claims;
 using MLDB.Api.Services;
+using AutoMapper;
+using MLDB.Api.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MLDB.Api.Controllers
 {
@@ -16,12 +19,16 @@ namespace MLDB.Api.Controllers
     public class SiteController : ControllerBase
     {
         private readonly SiteSurveyContext _context;
+
+        private readonly IMapper _mapper;
+
         private readonly IUserService _userSvc;
         private readonly ISiteService  _siteSvc;
 
-        public SiteController(SiteSurveyContext context,  IUserService userService, ISiteService siteService)
+        public SiteController(SiteSurveyContext context, IMapper mapper, IUserService userService, ISiteService siteService)
         {
             _context = context;
+            _mapper  = mapper;
             _userSvc = userService;
             _siteSvc = siteService;
         }
@@ -45,6 +52,23 @@ namespace MLDB.Api.Controllers
             }
 
             return site;
+        }
+
+        // GET: api/Site/5
+        [HttpGet("dto/{id}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<SiteDTO>> GetSiteDTO(Guid id)
+        {
+            var site = await _siteSvc.find(id);
+
+            if (site == null)
+            {
+                return NotFound();
+            }
+
+            var dto = _mapper.Map<SiteDTO>(site);
+
+            return dto;
         }
 
         // PUT: api/Site/5

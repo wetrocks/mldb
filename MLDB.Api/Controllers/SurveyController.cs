@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MLDB.Api.Models;
 using MLDB.Api.Services;
+using AutoMapper;
+using MLDB.Api.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MLDB.Api.Controllers
 {
@@ -14,13 +17,15 @@ namespace MLDB.Api.Controllers
     [ApiController]
     public class SurveyController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly SiteSurveyContext _context;
         private readonly ISiteSurveyService  _surveySvc;
 
-        public SurveyController(SiteSurveyContext context, ISiteSurveyService surveyService)
+        public SurveyController(SiteSurveyContext context, ISiteSurveyService surveyService, IMapper mapper)
         {
             _context = context;
             _surveySvc = surveyService;
+            _mapper = mapper;
         }
 
         // GET: api/Survey
@@ -42,6 +47,28 @@ namespace MLDB.Api.Controllers
             }
 
             return survey;
+        }
+
+        // GET: api/Survey/5
+        [HttpGet("dto/{id}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<SurveyDTO>> GetSurveyDTO(Guid id)
+        {
+            var survey = await _context.Surveys.FindAsync(id);
+
+            if (survey == null)
+            {
+                return NotFound();
+            }
+
+            survey.LitterItems = new List<LitterItem>() {
+                new LitterItem() { LitterType = new LitterType() { Id = 42 }, Count = 1 },
+                new LitterItem() { LitterType = new LitterType() { Id = 43 }, Count = 3 }
+            };
+
+            var dto = _mapper.Map<SurveyDTO>(survey);
+
+            return dto;
         }
 
         // PUT: api/Survey/5

@@ -8,6 +8,21 @@ namespace MLDB.Api.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "LitterTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    OsparID = table.Column<int>(nullable: false),
+                    DadID = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LitterTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -49,10 +64,9 @@ namespace MLDB.Api.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     Coordinator = table.Column<string>(nullable: true),
-                    Date = table.Column<DateTime>(nullable: false),
+                    StartTimeStamp = table.Column<DateTime>(nullable: false),
+                    EndTimeStamp = table.Column<DateTime>(nullable: false),
                     VolunteerCount = table.Column<short>(nullable: false),
-                    StartTime = table.Column<string>(nullable: true),
-                    EndTime = table.Column<string>(nullable: true),
                     TotalKg = table.Column<decimal>(nullable: false),
                     SiteId = table.Column<Guid>(nullable: false),
                     CreateUserIdpId = table.Column<string>(nullable: true),
@@ -75,6 +89,36 @@ namespace MLDB.Api.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "LitterItem",
+                columns: table => new
+                {
+                    SurveyId = table.Column<Guid>(nullable: false),
+                    LitterTypeId = table.Column<int>(nullable: false),
+                    Count = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LitterItem", x => new { x.SurveyId, x.LitterTypeId });
+                    table.ForeignKey(
+                        name: "FK_LitterItem_LitterTypes_LitterTypeId",
+                        column: x => x.LitterTypeId,
+                        principalTable: "LitterTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LitterItem_Surveys_SurveyId",
+                        column: x => x.SurveyId,
+                        principalTable: "Surveys",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LitterItem_LitterTypeId",
+                table: "LitterItem",
+                column: "LitterTypeId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Sites_CreateUserIdpId",
                 table: "Sites",
@@ -93,6 +137,12 @@ namespace MLDB.Api.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "LitterItem");
+
+            migrationBuilder.DropTable(
+                name: "LitterTypes");
+
             migrationBuilder.DropTable(
                 name: "Surveys");
 

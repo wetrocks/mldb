@@ -16,6 +16,26 @@ namespace MLDB.Api.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.8");
 
+            modelBuilder.Entity("LitterType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("DadID")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("OsparID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LitterTypes");
+                });
+
             modelBuilder.Entity("MLDB.Api.Models.Site", b =>
                 {
                     b.Property<Guid>("Id")
@@ -53,16 +73,13 @@ namespace MLDB.Api.Migrations
                     b.Property<string>("CreateUserIdpId")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("EndTime")
+                    b.Property<DateTime>("EndTimeStamp")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("SiteId")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("StartTime")
+                    b.Property<DateTime>("StartTimeStamp")
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("TotalKg")
@@ -123,6 +140,33 @@ namespace MLDB.Api.Migrations
                         .HasForeignKey("SiteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.OwnsMany("LitterItem", "LitterItems", b1 =>
+                        {
+                            b1.Property<Guid>("SurveyId")
+                                .HasColumnType("TEXT");
+
+                            b1.Property<int?>("LitterTypeId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<int>("Count")
+                                .HasColumnType("INTEGER");
+
+                            b1.HasKey("SurveyId", "LitterTypeId");
+
+                            b1.HasIndex("LitterTypeId");
+
+                            b1.ToTable("LitterItem");
+
+                            b1.HasOne("LitterType", "LitterType")
+                                .WithMany()
+                                .HasForeignKey("LitterTypeId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+
+                            b1.WithOwner()
+                                .HasForeignKey("SurveyId");
+                        });
                 });
 #pragma warning restore 612, 618
         }

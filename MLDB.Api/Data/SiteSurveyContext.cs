@@ -16,5 +16,17 @@ namespace MLDB.Api.Models
         public DbSet<Survey> Surveys { get; set; }
 
         public DbSet<User> Users { get;  set; }
+
+        public DbSet<LitterType> LitterTypes { get;  set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Survey>().OwnsMany(
+                s => s.LitterItems, li => 
+                {
+                    li.WithOwner().HasForeignKey("SurveyId");
+                    li.HasKey("SurveyId", "LitterTypeId");
+                });
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 
 namespace MLDB.Api.Models
@@ -10,13 +11,11 @@ namespace MLDB.Api.Models
 
         public string Coordinator{ get; set; }
 
-        public DateTime Date{ get; set; }
+        public DateTime StartTimeStamp{ get; set; }
+
+        public DateTime EndTimeStamp{ get; set; }
 
         public Int16 VolunteerCount{ get; set; }
-
-        public string StartTime{ get; set; }
-
-        public string EndTime{ get; set; }
 
         public Decimal TotalKg{ get; set; }
 
@@ -26,5 +25,6 @@ namespace MLDB.Api.Models
 
         public  DateTime CreateTimestamp { get; set; }
 
+        public List<LitterItem> LitterItems { get; set; }
     }
 }
