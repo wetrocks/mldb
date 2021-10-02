@@ -7,6 +7,8 @@ public class LitterItem {
 
     public Guid SurveyId{ get; set; }
 
+    public int LitterTypeId { get; set; }
+
     public LitterType LitterType{ get; set; }
 
     public int Count{ get; set; }

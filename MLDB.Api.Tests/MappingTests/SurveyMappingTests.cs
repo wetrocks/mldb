@@ -19,7 +19,7 @@ namespace MLDB.Api.Tests.MappingTests {
         }
 
         [Test]
-        public void surveyMapping_ShouldMapExpectedFields() {
+        public void surveyMapping_ToDTO_ShouldMapExpectedFields() {
             
             var testSurvey = new Survey();
             testSurvey.Id = Guid.NewGuid();
@@ -41,7 +41,7 @@ namespace MLDB.Api.Tests.MappingTests {
         }
 
         [Test]
-        public void surveyMapping_MapsLitterItems() {
+        public void surveyMapping_ToDTO_ShouldMapLitterItems() {
 
             var testSurvey = new Survey();
             testSurvey.Id = Guid.NewGuid();
@@ -55,6 +55,48 @@ namespace MLDB.Api.Tests.MappingTests {
             surveyDTO.LitterItems.Should().HaveCount(2);
             surveyDTO.LitterItems.Should().Contain("42", 1);
             surveyDTO.LitterItems.Should().Contain("43", 3);
+        }
+
+
+        [Test]
+        public void surveyMapping_FromDTO_ShouldMapExpectedFields() {
+            var surveyDTO = new SurveyDTO() { 
+                Id = Guid.NewGuid(),
+                SurveyDate = "1969-04-20",
+                StartTime = "16:20:09",
+                EndTime = "18:09:42",
+                Coordinator = "Test Coordinator",
+                VolunteerCount = 17,
+                TotalKg = 21.12m
+            };
+
+            var testSurvey = mapper.Map<Survey>(surveyDTO);
+
+            testSurvey.Id.Should().Be(surveyDTO.Id);
+            testSurvey.StartTimeStamp.Should().Be(new DateTime(1969,4,20,16,20,09));
+            testSurvey.EndTimeStamp.Should().Be(new DateTime(1969,4,20,18,09,42));            
+            testSurvey.Coordinator.Should().Be(surveyDTO.Coordinator);
+            testSurvey.VolunteerCount.Should().Be(surveyDTO.VolunteerCount);
+            testSurvey.TotalKg.Should().Be(surveyDTO.TotalKg);
+        }
+
+        [Test]
+        public void surveyMapping_FromDTO_ShouldMapLitterItems() {
+            var surveyDTO = new SurveyDTO() { 
+                SurveyDate = "1969-04-20",
+                StartTime = "16:20:09",
+                EndTime = "18:09:42",
+                LitterItems = new Dictionary<String, int>() { 
+                    ["42"] = 1,
+                    ["43"] = 3
+                }
+            };
+
+            var testSurvey = mapper.Map<Survey>(surveyDTO);
+
+            testSurvey.LitterItems.Should().HaveCount(2);
+            testSurvey.LitterItems.Should().ContainEquivalentOf( new LitterItem() { LitterTypeId = 42, Count = 1} );
+            testSurvey.LitterItems.Should().ContainEquivalentOf( new LitterItem() { LitterTypeId = 43, Count = 3} );
         }
     }
 }
