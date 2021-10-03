@@ -37,7 +37,7 @@ namespace MLDB.Api.Controllers
 
         // GET: api/Survey/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Survey>> GetSurvey(Guid id)
+        public async Task<ActionResult<SurveyDTO>> GetSurvey(Guid id)
         {
             var survey = await _context.Surveys.FindAsync(id);
 
@@ -46,7 +46,9 @@ namespace MLDB.Api.Controllers
                 return NotFound();
             }
 
-            return survey;
+            var dto = _mapper.Map<SurveyDTO>(survey);
+
+            return dto;
         }
 
         // GET: api/Survey/5
@@ -61,10 +63,10 @@ namespace MLDB.Api.Controllers
                 return NotFound();
             }
 
-            survey.LitterItems = new List<LitterItem>() {
-                new LitterItem() { LitterType = new LitterType() { Id = 42 }, Count = 1 },
-                new LitterItem() { LitterType = new LitterType() { Id = 43 }, Count = 3 }
-            };
+            // survey.LitterItems = new List<LitterItem>() {
+            //     new LitterItem() { LitterType = new LitterType() { Id = 42 }, Count = 1 },
+            //     new LitterItem() { LitterType = new LitterType() { Id = 43 }, Count = 3 }
+            // };
 
             var dto = _mapper.Map<SurveyDTO>(survey);
 
@@ -107,9 +109,11 @@ namespace MLDB.Api.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost()]
-        public async Task<ActionResult<Survey>> PostSurvey(Guid siteId, Survey survey)
+        public async Task<ActionResult<Survey>> PostSurvey(Guid siteId, SurveyDTO surveyDTO)
         {
-            var newSurvey = await _surveySvc.create(survey, siteId, HttpContext.User);
+            var dto = _mapper.Map<Survey>(surveyDTO);
+           
+            var newSurvey = await _surveySvc.create(dto, siteId, HttpContext.User);
 
             return CreatedAtAction("GetSurvey", new { siteId = newSurvey.SiteId, id = newSurvey.Id }, newSurvey);
         }
