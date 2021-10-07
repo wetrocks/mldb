@@ -19,6 +19,7 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MLDB.Api.Services;
+using FluentValidation.AspNetCore;
 
 namespace MLDB.Api
 {
@@ -35,6 +36,7 @@ namespace MLDB.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvcCore()
+                    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>())
                     .AddApiExplorer();
 
             services.AddAuthentication(options =>
