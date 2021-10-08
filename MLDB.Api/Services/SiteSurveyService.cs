@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 
 namespace MLDB.Api.Services
@@ -20,6 +21,12 @@ namespace MLDB.Api.Services
 
         public Task<List<Survey>> getAll() {
             return _dbCtx.Surveys.ToListAsync();
+        }
+
+        public async Task<Survey> getSurvey(Guid surveyId) {
+            var survey = await _dbCtx.Surveys.FindAsync(surveyId);
+
+            return survey;
         }
 
         public async Task<Survey> create(Survey survey, Guid siteId, ClaimsPrincipal userPrinciple) {
@@ -43,5 +50,25 @@ namespace MLDB.Api.Services
             return survey;
         }
 
+        public async Task<Survey> update(Survey survey, Guid siteId, ClaimsPrincipal userPrinciple) {
+            var createUser = _userSvc.createFromClaimsPrinicpal(userPrinciple);
+
+            var dbUser = _dbCtx.Users.Find(createUser.IdpId);
+            
+            survey.CreateUser = dbUser ?? createUser;
+            survey.SiteId = siteId;
+
+            _dbCtx.Entry(survey).State = EntityState.Modified;
+
+            // should probably handle the update exception here (like controller scaffold)
+            await _dbCtx.SaveChangesAsync();
+
+            return survey;
+        }
+    
+        private bool SurveyExists(Guid id)
+        {
+            return _dbCtx.Surveys.Any(e => e.Id == id);
+        }
     }
 }

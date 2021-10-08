@@ -10,7 +10,10 @@ namespace MLDB.Api.Services
 
         public Task<List<Survey>> getAll();
 
+        public Task<Survey> getSurvey(Guid surveyId);
+
         public Task<Survey> create(Survey survey, Guid siteId, ClaimsPrincipal userPrinciple);
 
+        public Task<Survey> update(Survey survey, Guid siteId, ClaimsPrincipal userPrinciple);
     }
 }

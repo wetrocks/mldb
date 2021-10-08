@@ -37,7 +37,7 @@ namespace MLDB.Api.Controllers
 
         // GET: api/Survey/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<SurveyDTO>> GetSurvey(Guid id)
+        public async Task<ActionResult<SurveyDTO>> GetSurvey(Guid siteId, Guid id)
         {
             var survey = await _context.Surveys.FindAsync(id);
 
@@ -45,28 +45,6 @@ namespace MLDB.Api.Controllers
             {
                 return NotFound();
             }
-
-            var dto = _mapper.Map<SurveyDTO>(survey);
-
-            return dto;
-        }
-
-        // GET: api/Survey/5
-        [HttpGet("dto/{id}")]
-        [AllowAnonymous]
-        public async Task<ActionResult<SurveyDTO>> GetSurveyDTO(Guid id)
-        {
-            var survey = await _context.Surveys.FindAsync(id);
-
-            if (survey == null)
-            {
-                return NotFound();
-            }
-
-            // survey.LitterItems = new List<LitterItem>() {
-            //     new LitterItem() { LitterType = new LitterType() { Id = 42 }, Count = 1 },
-            //     new LitterItem() { LitterType = new LitterType() { Id = 43 }, Count = 3 }
-            // };
 
             var dto = _mapper.Map<SurveyDTO>(survey);
 
@@ -77,18 +55,17 @@ namespace MLDB.Api.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSurvey(Guid id, Survey survey)
-        {
-            if (id != survey.Id)
+        public async Task<IActionResult> PutSurvey(Guid siteId, Guid id, SurveyDTO surveyDTO)
+        {   
+            if (id != surveyDTO.Id)
             {
                 return BadRequest();
             }
-
-            _context.Entry(survey).State = EntityState.Modified;
-
+            
+            var dto = _mapper.Map<Survey>(surveyDTO);
             try
             {
-                await _context.SaveChangesAsync();
+                await _surveySvc.update(dto, siteId, HttpContext.User);
             }
             catch (DbUpdateConcurrencyException)
             {
