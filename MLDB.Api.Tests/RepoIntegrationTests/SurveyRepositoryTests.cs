@@ -64,15 +64,6 @@ namespace MLDB.Api.Tests.RepoIntegrationTests
 
         private void seedTestData() {
             using( var seedCtx = new SiteSurveyContext(ctxOptions)) {
-                // litter item types
-                var item42 = new LitterType();
-                item42.Id = 42;
-                seedCtx.Add(item42);
-
-                var item43 = new LitterType();
-                item43.Id = 43;
-                seedCtx.Add(item43);
-
                 var fixture = new Fixture();
 
                 seedUser  = new User("seedIdpID");

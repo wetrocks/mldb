@@ -7,6 +7,8 @@ using FluentAssertions;
 using System.Collections.Generic;
 
 namespace MLDB.Api.Tests.MappingTests {
+
+    [TestOf(typeof(MLDB.Api.Mapping.SurveyProfile))]
     public class SurveyMappingTests {
 
         private IMapper mapper = null;
@@ -56,8 +58,8 @@ namespace MLDB.Api.Tests.MappingTests {
         public void surveyMapping_ToDTO_ShouldMapLitterItems() {
 
             testSurvey.LitterItems = new List<LitterItem>() {
-                new LitterItem() { LitterType = new LitterType() { Id = 42 }, Count = 1 },
-                new LitterItem() { LitterType = new LitterType() { Id = 43 }, Count = 3 }
+                new LitterItem() { LitterTypeId = 42, Count = 1 },
+                new LitterItem() { LitterTypeId = 43, Count = 3 }
             };
 
             var surveyDTO  = mapper.Map<SurveyDTO>(testSurvey);

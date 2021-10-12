@@ -12,7 +12,7 @@ namespace MLDB.Api.Mapping {
     {
         public SurveyProfile() {
             CreateMap<Survey, SurveyDTO>()
-            .ForMember( x => x.LitterItems, s => s.MapFrom( x => x.LitterItems.ToDictionary( li => li.LitterType.Id.ToString(),
+            .ForMember( x => x.LitterItems, s => s.MapFrom( x => x.LitterItems.ToDictionary( li => li.LitterTypeId,
                                                                                              li => li.Count )))
             .ForMember( x => x.SurveyDate, s => s.MapFrom( x => x.StartTimeStamp.ToString("yyyy-MM-dd")))                                                                                
             .ForMember( x => x.StartTime, s => s.MapFrom( x => x.StartTimeStamp.ToString("T", CultureInfo.InvariantCulture)))
