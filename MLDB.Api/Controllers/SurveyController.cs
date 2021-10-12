@@ -19,11 +19,13 @@ namespace MLDB.Api.Controllers
     {
         private readonly IMapper _mapper;
         private readonly SiteSurveyContext _context;
+        private readonly IUserService  _userSvc;
         private readonly ISiteSurveyService  _surveySvc;
 
-        public SurveyController(SiteSurveyContext context, ISiteSurveyService surveyService, IMapper mapper)
+        public SurveyController(SiteSurveyContext context, IUserService userService, ISiteSurveyService surveyService, IMapper mapper)
         {
             _context = context;
+            _userSvc = userService;
             _surveySvc = surveyService;
             _mapper = mapper;
         }
@@ -61,11 +63,13 @@ namespace MLDB.Api.Controllers
             {
                 return BadRequest();
             }
-            
+
+            User requestUser = _userSvc.findOrAddUser(HttpContext.User);
+
             var dto = _mapper.Map<Survey>(surveyDTO);
             try
             {
-                await _surveySvc.update(dto, siteId, HttpContext.User);
+                await _surveySvc.update(dto, siteId, requestUser);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -90,7 +94,9 @@ namespace MLDB.Api.Controllers
         {
             var dto = _mapper.Map<Survey>(surveyDTO);
            
-            var newSurvey = await _surveySvc.create(dto, siteId, HttpContext.User);
+            User requestUser = _userSvc.findOrAddUser(HttpContext.User);
+
+            var newSurvey = await _surveySvc.create(dto, siteId, requestUser);
 
             return CreatedAtAction("GetSurvey", new { siteId = newSurvey.SiteId, id = newSurvey.Id }, newSurvey);
         }

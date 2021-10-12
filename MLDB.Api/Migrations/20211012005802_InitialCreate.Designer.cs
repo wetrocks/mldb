@@ -9,14 +9,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MLDB.Api.Migrations
 {
     [DbContext(typeof(SiteSurveyContext))]
-    [Migration("20211002011215_InitialCreate")]
+    [Migration("20211012005802_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.8");
+                .HasAnnotation("ProductVersion", "5.0.10");
 
             modelBuilder.Entity("LitterType", b =>
                 {
@@ -36,6 +36,20 @@ namespace MLDB.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("LitterTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 42,
+                            Description = "Bags",
+                            OsparID = 1
+                        },
+                        new
+                        {
+                            Id = 43,
+                            Description = "Caps/Lids",
+                            OsparID = 2
+                        });
                 });
 
             modelBuilder.Entity("MLDB.Api.Models.Site", b =>
@@ -129,6 +143,8 @@ namespace MLDB.Api.Migrations
                     b.HasOne("MLDB.Api.Models.User", "CreateUser")
                         .WithMany()
                         .HasForeignKey("CreateUserIdpId");
+
+                    b.Navigation("CreateUser");
                 });
 
             modelBuilder.Entity("MLDB.Api.Models.Survey", b =>
@@ -148,7 +164,7 @@ namespace MLDB.Api.Migrations
                             b1.Property<Guid>("SurveyId")
                                 .HasColumnType("TEXT");
 
-                            b1.Property<int?>("LitterTypeId")
+                            b1.Property<int>("LitterTypeId")
                                 .HasColumnType("INTEGER");
 
                             b1.Property<int>("Count")
@@ -168,7 +184,18 @@ namespace MLDB.Api.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("SurveyId");
+
+                            b1.Navigation("LitterType");
                         });
+
+                    b.Navigation("CreateUser");
+
+                    b.Navigation("LitterItems");
+                });
+
+            modelBuilder.Entity("MLDB.Api.Models.Site", b =>
+                {
+                    b.Navigation("Surveys");
                 });
 #pragma warning restore 612, 618
         }

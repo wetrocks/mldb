@@ -27,6 +27,17 @@ namespace MLDB.Api.Models
                     li.WithOwner().HasForeignKey("SurveyId");
                     li.HasKey("SurveyId", "LitterTypeId");
                 });
+
+
+            SeedLitterTypes(modelBuilder);
         }
+
+        private void SeedLitterTypes(ModelBuilder builder)  
+        {  
+            builder.Entity<LitterType>().HasData(  
+                new LitterType() { Id = 42, OsparID = 1, Description = "Bags" },
+                new LitterType() { Id = 43, OsparID = 2, Description = "Caps/Lids" } 
+            );  
+        }  
     }
 }

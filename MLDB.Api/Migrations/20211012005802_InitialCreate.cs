@@ -11,11 +11,11 @@ namespace MLDB.Api.Migrations
                 name: "LitterTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    OsparID = table.Column<int>(nullable: false),
-                    DadID = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true)
+                    OsparID = table.Column<int>(type: "INTEGER", nullable: false),
+                    DadID = table.Column<string>(type: "TEXT", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -26,12 +26,12 @@ namespace MLDB.Api.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    IdpId = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    Email = table.Column<string>(nullable: true),
-                    EmailVerified = table.Column<bool>(nullable: false),
-                    CreateTime = table.Column<DateTime>(nullable: false),
-                    UpdateTime = table.Column<DateTime>(nullable: false)
+                    IdpId = table.Column<string>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Email = table.Column<string>(type: "TEXT", nullable: true),
+                    EmailVerified = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CreateTime = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -42,10 +42,10 @@ namespace MLDB.Api.Migrations
                 name: "Sites",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    CreateUserIdpId = table.Column<string>(nullable: true),
-                    CreateTimestamp = table.Column<DateTime>(nullable: false)
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    CreateUserIdpId = table.Column<string>(type: "TEXT", nullable: true),
+                    CreateTimestamp = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -62,40 +62,40 @@ namespace MLDB.Api.Migrations
                 name: "Surveys",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    Coordinator = table.Column<string>(nullable: true),
-                    StartTimeStamp = table.Column<DateTime>(nullable: false),
-                    EndTimeStamp = table.Column<DateTime>(nullable: false),
-                    VolunteerCount = table.Column<short>(nullable: false),
-                    TotalKg = table.Column<decimal>(nullable: false),
-                    SiteId = table.Column<Guid>(nullable: false),
-                    CreateUserIdpId = table.Column<string>(nullable: true),
-                    CreateTimestamp = table.Column<DateTime>(nullable: false)
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Coordinator = table.Column<string>(type: "TEXT", nullable: true),
+                    StartTimeStamp = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    EndTimeStamp = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    VolunteerCount = table.Column<short>(type: "INTEGER", nullable: false),
+                    TotalKg = table.Column<decimal>(type: "TEXT", nullable: false),
+                    SiteId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CreateUserIdpId = table.Column<string>(type: "TEXT", nullable: true),
+                    CreateTimestamp = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Surveys", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Surveys_Users_CreateUserIdpId",
-                        column: x => x.CreateUserIdpId,
-                        principalTable: "Users",
-                        principalColumn: "IdpId",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Surveys_Sites_SiteId",
                         column: x => x.SiteId,
                         principalTable: "Sites",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Surveys_Users_CreateUserIdpId",
+                        column: x => x.CreateUserIdpId,
+                        principalTable: "Users",
+                        principalColumn: "IdpId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "LitterItem",
                 columns: table => new
                 {
-                    SurveyId = table.Column<Guid>(nullable: false),
-                    LitterTypeId = table.Column<int>(nullable: false),
-                    Count = table.Column<int>(nullable: false)
+                    SurveyId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    LitterTypeId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Count = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -113,6 +113,16 @@ namespace MLDB.Api.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "LitterTypes",
+                columns: new[] { "Id", "DadID", "Description", "OsparID" },
+                values: new object[] { 42, null, "Bags", 1 });
+
+            migrationBuilder.InsertData(
+                table: "LitterTypes",
+                columns: new[] { "Id", "DadID", "Description", "OsparID" },
+                values: new object[] { 43, null, "Caps/Lids", 2 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_LitterItem_LitterTypeId",

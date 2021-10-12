@@ -20,6 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MLDB.Api.Services;
 using FluentValidation.AspNetCore;
+using MLDB.Api.Repositories;
 
 namespace MLDB.Api
 {
@@ -92,6 +93,7 @@ namespace MLDB.Api
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ISiteService, SiteService>();
+            services.AddScoped<ISurveyRepository, SurveyRepository>();
             services.AddScoped<ISiteSurveyService, SiteSurveyService>();
 
             services.AddAutoMapper(typeof(Startup));
