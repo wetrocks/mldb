@@ -74,7 +74,7 @@ namespace MLDB.Api
                     });
 
             services.AddDbContext<SiteSurveyContext>(opt =>
-               opt.UseSqlite("Data Source=localDb/sqlite.db"));
+               opt.UseSqlite(Configuration.GetConnectionString("mldbDB")));
             
             // require authentication by default, make controller opt-out for anonymous
             services.AddControllers(options =>
