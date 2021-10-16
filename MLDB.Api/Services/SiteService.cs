@@ -18,7 +18,7 @@ namespace MLDB.Api.Services
             _userSvc = userService;
         }
 
-        public async Task<List<Site>> getAll() {
+        public async Task<IList<Site>> getAll() {
             return await _dbCtx.Sites.ToListAsync();
         }
 

@@ -9,7 +9,7 @@ namespace MLDB.Api.Services
 {
     public interface ISiteService {
 
-        public Task<List<Site>> getAll();
+        public Task<IList<Site>> getAll();
 
         public Task<Site> find(Guid id);
 

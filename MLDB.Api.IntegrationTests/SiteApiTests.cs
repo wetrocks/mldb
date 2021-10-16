@@ -16,15 +16,19 @@ using MLDB.Api.Models;
 using FluentAssertions.Json;
 using AutoFixture;
 using Newtonsoft.Json.Linq;
+using MLDB.Api.DTO;
+using System.Net.Http.Json;
 
 
 namespace MLDB.Api.IntegrationTests
 {
+    [TestOf(typeof(MLDB.Api.Controllers.SiteController))]
     public class SiteApiTests
     {
         APITestWebApplicationFactory factory;
         HttpClient client;
         SiteSurveyContext dbCtx;
+        Fixture fixture;
 
         [SetUp]
         public void Setup()
@@ -36,19 +40,20 @@ namespace MLDB.Api.IntegrationTests
             dbCtx = scope.ServiceProvider.GetRequiredService<SiteSurveyContext>();
 
             dbCtx.Database.EnsureCreated();
+
+            fixture = new Fixture();
         }
 
         [Test]
-        public async Task DoesNotAllowUnauthorizedAccess()
+        public async Task GetSites_DoesNotAllowUnauthorizedAccess()
         {
-            var result = await client.GetAsync("/api/site/1");
+            var result = await client.GetAsync("/site");
             Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
 
         [Test]
         public async Task GetSites_ReturnsAllSites()
         {
-            var fixture = new Fixture();
             var existingSite = fixture.Build<Site>()
                                     .Without( x => x.Surveys )
                                     .Create();
@@ -62,10 +67,77 @@ namespace MLDB.Api.IntegrationTests
 
             client.SetFakeBearerToken((object)data);
 
-            var response = await client.GetAsync("/api/site");
+            var response = await client.GetAsync("/site");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var body = await response.Content.ReadAsStringAsync();
             JToken.Parse(body).Should().ContainSubtree(String.Format("[{{ 'id' : '{0}' }}]", existingSite.Id));
+        }
+
+        [Test]
+        public async Task GetSite_DoesNotAllowUnauthorizedAccess()
+        {
+            var result = await client.GetAsync($"/site/{Guid.NewGuid()}");
+            Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+        [Test]
+        public async Task GetSite_WhenNotExists_Returns404()
+        {
+            dynamic data = new ExpandoObject();
+            data.sub = "testuser";
+            data.role = new [] {"sub_role","admin"};
+
+            client.SetFakeBearerToken((object)data);
+
+            var response = await client.GetAsync($"/site/{Guid.NewGuid()}");
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        [Test]
+        public async Task GetSite_WhenExists_ReturnsOK()
+        {
+            var existingSite = fixture.Build<Site>()
+                                    .Without( x => x.Surveys )
+                                    .Create();
+            dbCtx.Sites.Add(existingSite);
+            dbCtx.SaveChanges();
+            dbCtx.ChangeTracker.Clear();
+
+            dynamic data = new ExpandoObject();
+            data.sub = "testuser";
+            data.role = new [] {"sub_role","admin"};
+
+            client.SetFakeBearerToken((object)data);
+
+            var response = await client.GetAsync($"/site/{existingSite.Id}");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var body = await response.Content.ReadAsStringAsync();
+            JToken.Parse(body).Should().ContainSubtree(String.Format("{{ 'id' : '{0}' }}", existingSite.Id));
+        }
+
+        [Test]
+        public async Task PostSite_DoesNotAllowUnauthorizedAccess()
+        {
+            var testDTO = fixture.Build<SiteDTO>().Create();
+            
+            var result = await client.PostAsJsonAsync($"/site", testDTO);
+            Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+        [Test]
+        [Ignore("Need to implement mapping")]
+        public async Task PostSite_CreatesSiteAndReturnsId()
+        {
+            var testDTO = fixture.Build<SiteDTO>().Create();
+            
+            dynamic data = new ExpandoObject();
+            data.sub = "testuser";
+            data.role = new [] {"sub_role","admin"};
+
+            client.SetFakeBearerToken((object)data);
+
+            var result = await client.PostAsJsonAsync($"/site", testDTO);
+            Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
     }
 }

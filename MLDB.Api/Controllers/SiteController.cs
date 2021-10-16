@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MLDB.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class SiteController : ControllerBase
     {
@@ -22,27 +22,27 @@ namespace MLDB.Api.Controllers
 
         private readonly IMapper _mapper;
 
-        private readonly IUserService _userSvc;
         private readonly ISiteService  _siteSvc;
 
-        public SiteController(SiteSurveyContext context, IMapper mapper, IUserService userService, ISiteService siteService)
+        public SiteController(SiteSurveyContext context, IMapper mapper, ISiteService siteService)
         {
             _context = context;
             _mapper  = mapper;
-            _userSvc = userService;
             _siteSvc = siteService;
         }
 
-        // GET: api/Site
+        // GET: /site
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Site>>> GetSites()
+        public async Task<ActionResult<List<SiteDTO>>> GetSites()
         {
-            return await _siteSvc.getAll();
+            var sites =  await _siteSvc.getAll();
+            
+            return _mapper.Map<IList<Site>, List<SiteDTO>>(sites);
         }
 
-        // GET: api/Site/5
+        // GET: /site/<guid>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Site>> GetSite(Guid id)
+        public async Task<ActionResult<SiteDTO>> GetSite(Guid id)
         {
             var site = await _siteSvc.find(id);
 
@@ -51,31 +51,14 @@ namespace MLDB.Api.Controllers
                 return NotFound();
             }
 
-            return site;
+            return _mapper.Map<SiteDTO>(site);
         }
 
-        // GET: api/Site/5
-        [HttpGet("dto/{id}")]
-        [AllowAnonymous]
-        public async Task<ActionResult<SiteDTO>> GetSiteDTO(Guid id)
-        {
-            var site = await _siteSvc.find(id);
-
-            if (site == null)
-            {
-                return NotFound();
-            }
-
-            var dto = _mapper.Map<SiteDTO>(site);
-
-            return dto;
-        }
-
-        // PUT: api/Site/5
+        // PUT: /site/<guid>
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSite(Guid id, Site site)
+        public async Task<ActionResult> PutSite(Guid id, SiteDTO site)
         {
             if (id != site.Id)
             {
@@ -103,32 +86,19 @@ namespace MLDB.Api.Controllers
             return NoContent();
         }
 
-        // POST: api/Site
+        // POST: /site
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Site>> PostSite([FromBody]Site site)
+        public async Task<ActionResult<Site>> PostSite([FromBody]SiteDTO siteDTO)
         {
+            var site = _mapper.Map<Site>(siteDTO);
+
             var createdSite = await _siteSvc.create(site, HttpContext.User);
            
             return CreatedAtAction("GetSite", new { id = createdSite.Id }, createdSite);
         }
 
-        // DELETE: api/Site/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Site>> DeleteSite(Guid id)
-        {
-            var site = await _context.Sites.FindAsync(id);
-            if (site == null)
-            {
-                return NotFound();
-            }
-
-            _context.Sites.Remove(site);
-            await _context.SaveChangesAsync();
-
-            return site;
-        }
 
         private bool SiteExists(Guid id)
         {
