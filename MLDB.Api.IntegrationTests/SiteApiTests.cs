@@ -125,8 +125,7 @@ namespace MLDB.Api.IntegrationTests
         }
 
         [Test]
-        [Ignore("Need to implement mapping")]
-        public async Task PostSite_CreatesSiteAndReturnsId()
+        public async Task PostSite_CreatesSiteAndReturnsJson()
         {
             var testDTO = fixture.Build<SiteDTO>().Create();
             
@@ -137,7 +136,14 @@ namespace MLDB.Api.IntegrationTests
             client.SetFakeBearerToken((object)data);
 
             var result = await client.PostAsJsonAsync($"/site", testDTO);
-            Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+
+            // need this to check return json
+            var createdSite = dbCtx.Sites.OrderByDescending( x => x.CreateTimestamp ).SingleOrDefault();
+
+            Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+            var body = await result.Content.ReadAsStringAsync();
+            JToken.Parse(body).Should().ContainSubtree(
+                String.Format("{{ 'id' : '{0}', 'name' : '{1}' }}", createdSite.Id, testDTO.Name));
         }
     }
 }

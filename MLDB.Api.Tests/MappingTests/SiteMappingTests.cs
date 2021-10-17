@@ -4,24 +4,45 @@ using NUnit.Framework;
 using MLDB.Api.DTO;
 using MLDB.Api.Models;
 using FluentAssertions;
+using AutoFixture;
+using MLDB.Api.Mapping;
 
 namespace MLDB.Api.Tests.MappingTests {
     public class SiteMappingTests {
 
-        [Test]
-        public void siteMapping_ShouldMapExpectedFields() {
-            
-            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new MLDB.Api.Mapping.SiteProfile()));
-            var mapper = configuration.CreateMapper();
+        private IMapper mapper;
+        private Fixture fixture;
 
-            var testSite = new Site();
-            testSite.Name = "foo";
+        [SetUp]
+        public void SetUp() {
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new SiteProfile()));
+            mapper = configuration.CreateMapper();
+
+            fixture = new Fixture();
+        }
+
+        [Test]
+        public void siteMapping_ToDTO_ShouldMapExpectedFields() {
+            var testSite = fixture.Build<Site>()
+                                .With( x => x.CreateUser )
+                                .Create();
 
             // Perform mapping
             var siteDTO  = mapper.Map<SiteDTO>(testSite);
 
-            siteDTO.Name.Should().Be("foo");
+            siteDTO.Id.Should().Be(testSite.Id);
+            siteDTO.Name.Should().Be(testSite.Name);
+            siteDTO.CreatedBy.Should().Be(testSite.CreateUser.Name);
         }
 
+        [Test]
+        public void siteMapping_FromDTO_ShouldMapExpectedFields()  {
+            var testDTO = fixture.Build<SiteDTO>().Create();
+
+            var testSite = mapper.Map<Site>(testDTO);
+
+            testSite.Id.Should().Be(testDTO.Id);
+            testSite.Name.Should().Be(testDTO.Name);
+        }
     }
 }
