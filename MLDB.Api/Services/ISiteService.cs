@@ -11,9 +11,11 @@ namespace MLDB.Api.Services
 
         public Task<IList<Site>> getAll();
 
-        public Task<Site> find(Guid id);
+        public Task<Site> getSite(Guid id);
 
-        public Task<Site> create(Site site, ClaimsPrincipal userPrinciple);
+        public Task<Site> create(Site site, User user);
+
+        public Task<Site> update(Site site, User user);
 
     }
 }

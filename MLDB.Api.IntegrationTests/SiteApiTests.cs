@@ -30,6 +30,8 @@ namespace MLDB.Api.IntegrationTests
         SiteSurveyContext dbCtx;
         Fixture fixture;
 
+        dynamic testToken;
+
         [SetUp]
         public void Setup()
         {
@@ -42,6 +44,9 @@ namespace MLDB.Api.IntegrationTests
             dbCtx.Database.EnsureCreated();
 
             fixture = new Fixture();
+
+            testToken = new ExpandoObject();
+            testToken.sub = "testuser";
         }
 
         [Test]
@@ -59,13 +64,8 @@ namespace MLDB.Api.IntegrationTests
                                     .Create();
             dbCtx.Sites.Add(existingSite);
             dbCtx.SaveChanges();
-            dbCtx.ChangeTracker.Clear();
 
-            dynamic data = new ExpandoObject();
-            data.sub = "testuser";
-            data.role = new [] {"sub_role","admin"};
-
-            client.SetFakeBearerToken((object)data);
+            client.SetFakeBearerToken((object)testToken);
 
             var response = await client.GetAsync("/site");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -103,11 +103,7 @@ namespace MLDB.Api.IntegrationTests
             dbCtx.SaveChanges();
             dbCtx.ChangeTracker.Clear();
 
-            dynamic data = new ExpandoObject();
-            data.sub = "testuser";
-            data.role = new [] {"sub_role","admin"};
-
-            client.SetFakeBearerToken((object)data);
+            client.SetFakeBearerToken((object)testToken);
 
             var response = await client.GetAsync($"/site/{existingSite.Id}");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -129,11 +125,7 @@ namespace MLDB.Api.IntegrationTests
         {
             var testDTO = fixture.Build<SiteDTO>().Create();
             
-            dynamic data = new ExpandoObject();
-            data.sub = "testuser";
-            data.role = new [] {"sub_role","admin"};
-
-            client.SetFakeBearerToken((object)data);
+            client.SetFakeBearerToken((object)testToken);
 
             var result = await client.PostAsJsonAsync($"/site", testDTO);
 
@@ -144,6 +136,45 @@ namespace MLDB.Api.IntegrationTests
             var body = await result.Content.ReadAsStringAsync();
             JToken.Parse(body).Should().ContainSubtree(
                 String.Format("{{ 'id' : '{0}', 'name' : '{1}' }}", createdSite.Id, testDTO.Name));
+        }
+
+        [Test]
+        public async Task PutSite_DoesNotAllowUnauthorizedAccess()
+        {
+            var testDTO = fixture.Build<SiteDTO>().Create();
+            
+            var result = await client.PutAsJsonAsync($"/site/{testDTO.Id}", testDTO);
+            Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+        [Test]
+        public async Task PutSite_WhenDoesNotExist_Returns404()
+        {
+            var testDTO = fixture.Build<SiteDTO>().Create();
+
+            client.SetFakeBearerToken((object)testToken);
+            
+            var result = await client.PutAsJsonAsync($"/site/{testDTO.Id}", testDTO);
+            Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+
+        [Test]
+        public async Task PutSite_WhenDoesExists_UpdatesSite()
+        {
+            var testSite = fixture.Build<Site>().Create();
+            dbCtx.Sites.Add(testSite);
+            dbCtx.SaveChanges();
+
+            client.SetFakeBearerToken((object)testToken);
+            
+            var newName = fixture.Create<string>();
+            var testDTO = new SiteDTO(){ Id = testSite.Id, Name = newName };
+
+            var result = await client.PutAsJsonAsync($"/site/{testDTO.Id}", testDTO);
+            Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+
+            var updatedSite = dbCtx.Sites.Single( x => x.Id == testDTO.Id );
+            updatedSite.Name.Should().Equals(newName);
         }
     }
 }

@@ -11,6 +11,7 @@ using MLDB.Api.Services;
 using AutoMapper;
 using MLDB.Api.DTO;
 using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace MLDB.Api.Controllers
 {
@@ -18,17 +19,17 @@ namespace MLDB.Api.Controllers
     [ApiController]
     public class SiteController : ControllerBase
     {
-        private readonly SiteSurveyContext _context;
-
         private readonly IMapper _mapper;
 
         private readonly ISiteService  _siteSvc;
 
-        public SiteController(SiteSurveyContext context, IMapper mapper, ISiteService siteService)
+        private readonly IUserService _userSvc;
+
+        public SiteController(IUserService userService, IMapper mapper, ISiteService siteService)
         {
-            _context = context;
             _mapper  = mapper;
             _siteSvc = siteService;
+            _userSvc = userService;
         }
 
         // GET: /site
@@ -44,7 +45,7 @@ namespace MLDB.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<SiteDTO>> GetSite(Guid id)
         {
-            var site = await _siteSvc.find(id);
+            var site = await _siteSvc.getSite(id);
 
             if (site == null)
             {
@@ -55,32 +56,24 @@ namespace MLDB.Api.Controllers
         }
 
         // PUT: /site/<guid>
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutSite(Guid id, SiteDTO site)
+        public async Task<ActionResult> PutSite(Guid id, SiteDTO siteDTO)
         {
-            if (id != site.Id)
+            if (id != siteDTO.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(site).State = EntityState.Modified;
+            var site = _mapper.Map<Site>(siteDTO);
 
+            User requestUser = _userSvc.findOrAddUser(HttpContext.User);
             try
             {
-                await _context.SaveChangesAsync();
+                await _siteSvc.update(site, requestUser);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (System.Data.RowNotInTableException)
             {
-                if (!SiteExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return NoContent();
@@ -92,15 +85,11 @@ namespace MLDB.Api.Controllers
         {
             var site = _mapper.Map<Site>(siteDTO);
 
-            var createdSite = await _siteSvc.create(site, HttpContext.User);
+            User requestUser = _userSvc.findOrAddUser(HttpContext.User);
+
+            var createdSite = await _siteSvc.create(site, requestUser);
            
             return CreatedAtAction("GetSite", new { id = createdSite.Id }, createdSite);
-        }
-
-
-        private bool SiteExists(Guid id)
-        {
-            return _context.Sites.Any(e => e.Id == id);
         }
     }
 }
