@@ -128,9 +128,9 @@ namespace MLDB.Api.IntegrationTests.ServiceTests
             var testSite = fixture.Build<Site>()
                             .Create();
 
-            Assert.ThrowsAsync<System.Data.RowNotInTableException>( async () => { 
-                await testSvc.update(testSite, seedUser);
-            });
+            Func<Task> updateAction = () => testSvc.update(testSite, seedUser);
+
+            await updateAction.Should().ThrowAsync<System.Data.RowNotInTableException>();
         }
     }
 }

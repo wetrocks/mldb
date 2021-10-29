@@ -21,6 +21,7 @@ using Microsoft.OpenApi.Models;
 using MLDB.Api.Services;
 using FluentValidation.AspNetCore;
 using MLDB.Api.Repositories;
+using Serilog;
 
 namespace MLDB.Api
 {
@@ -97,6 +98,8 @@ namespace MLDB.Api
             services.AddScoped<ISiteSurveyService, SiteSurveyService>();
 
             services.AddAutoMapper(typeof(Startup));
+
+            services.AddHttpContextAccessor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -106,6 +109,8 @@ namespace MLDB.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSerilogRequestLogging();
 
             // TODO: not this
            // app.UseHttpsRedirection();
