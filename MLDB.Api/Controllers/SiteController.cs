@@ -11,128 +11,85 @@ using MLDB.Api.Services;
 using AutoMapper;
 using MLDB.Api.DTO;
 using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace MLDB.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class SiteController : ControllerBase
     {
-        private readonly SiteSurveyContext _context;
-
         private readonly IMapper _mapper;
 
-        private readonly IUserService _userSvc;
         private readonly ISiteService  _siteSvc;
 
-        public SiteController(SiteSurveyContext context, IMapper mapper, IUserService userService, ISiteService siteService)
+        private readonly IUserService _userSvc;
+
+        public SiteController(IUserService userService, IMapper mapper, ISiteService siteService)
         {
-            _context = context;
             _mapper  = mapper;
-            _userSvc = userService;
             _siteSvc = siteService;
+            _userSvc = userService;
         }
 
-        // GET: api/Site
+        // GET: /site
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Site>>> GetSites()
+        public async Task<ActionResult<List<SiteDTO>>> GetSites()
         {
-            return await _siteSvc.getAll();
+            var sites =  await _siteSvc.getAll();
+            
+            return _mapper.Map<IList<Site>, List<SiteDTO>>(sites);
         }
 
-        // GET: api/Site/5
+        // GET: /site/<guid>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Site>> GetSite(Guid id)
+        public async Task<ActionResult<SiteDTO>> GetSite(Guid id)
         {
-            var site = await _siteSvc.find(id);
+            var site = await _siteSvc.getSite(id);
 
             if (site == null)
             {
                 return NotFound();
             }
 
-            return site;
+            return _mapper.Map<SiteDTO>(site);
         }
 
-        // GET: api/Site/5
-        [HttpGet("dto/{id}")]
-        [AllowAnonymous]
-        public async Task<ActionResult<SiteDTO>> GetSiteDTO(Guid id)
-        {
-            var site = await _siteSvc.find(id);
-
-            if (site == null)
-            {
-                return NotFound();
-            }
-
-            var dto = _mapper.Map<SiteDTO>(site);
-
-            return dto;
-        }
-
-        // PUT: api/Site/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        // PUT: /site/<guid>
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSite(Guid id, Site site)
+        public async Task<ActionResult> PutSite(Guid id, SiteDTO siteDTO)
         {
-            if (id != site.Id)
+            if (id != siteDTO.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(site).State = EntityState.Modified;
+            var site = _mapper.Map<Site>(siteDTO);
 
+            User requestUser = _userSvc.findOrAddUser(HttpContext.User);
             try
             {
-                await _context.SaveChangesAsync();
+                await _siteSvc.update(site, requestUser);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (System.Data.RowNotInTableException)
             {
-                if (!SiteExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return NoContent();
         }
 
-        // POST: api/Site
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        // POST: /site
         [HttpPost]
-        public async Task<ActionResult<Site>> PostSite([FromBody]Site site)
+        public async Task<ActionResult<Site>> PostSite([FromBody]SiteDTO siteDTO)
         {
-            var createdSite = await _siteSvc.create(site, HttpContext.User);
+            var site = _mapper.Map<Site>(siteDTO);
+
+            User requestUser = _userSvc.findOrAddUser(HttpContext.User);
+
+            var createdSite = await _siteSvc.create(site, requestUser);
            
             return CreatedAtAction("GetSite", new { id = createdSite.Id }, createdSite);
-        }
-
-        // DELETE: api/Site/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Site>> DeleteSite(Guid id)
-        {
-            var site = await _context.Sites.FindAsync(id);
-            if (site == null)
-            {
-                return NotFound();
-            }
-
-            _context.Sites.Remove(site);
-            await _context.SaveChangesAsync();
-
-            return site;
-        }
-
-        private bool SiteExists(Guid id)
-        {
-            return _context.Sites.Any(e => e.Id == id);
         }
     }
 }

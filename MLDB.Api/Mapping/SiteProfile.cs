@@ -7,7 +7,15 @@ namespace MLDB.Api.Mapping {
     public class SiteProfile : Profile
     {
         public SiteProfile() {
-            CreateMap<Site, SiteDTO>();
+            CreateMap<Survey, SurveyDTO>()
+                .ForMember( x => x.SurveyDate, s => s.MapFrom( s => s.StartTimeStamp.ToString("yyyy-MM-dd")) )
+                .ForMember( x => x.LitterItems, opt => opt.Ignore() );
+
+
+            CreateMap<Site, SiteDTO>()
+                .ForMember( x => x.CreatedBy, s => s.MapFrom( x => x.CreateUser != null ? x.CreateUser.Name : null ))                  
+                .ReverseMap()
+                .ForMember( x => x.Surveys, opt => opt.Ignore() );
         }
     }
 }

@@ -30,7 +30,7 @@ namespace MLDB.Api.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/Survey
+        // GET: /site/{siteid}/survey
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Survey>>> GetSurveys()
         {
