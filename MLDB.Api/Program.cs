@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Exceptions;
 
 namespace MLDB.Api
 {
@@ -21,6 +23,13 @@ namespace MLDB.Api
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                });
+                })
+                .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
+                    .Enrich.FromLogContext() 
+                    .Enrich.WithExceptionDetails()
+                    .Enrich.WithClientAgent()
+                    .Enrich.WithClientIp()
+                    .Enrich.WithCorrelationId()
+                    .ReadFrom.Configuration(hostingContext.Configuration));
     }
 }
