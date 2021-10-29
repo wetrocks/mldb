@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 
-using MLDB.Api.Models;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.IO;
 
 namespace MLDB.Api.Models
 {
@@ -32,10 +34,20 @@ namespace MLDB.Api.Models
         }
         private void SeedLitterTypes(ModelBuilder builder)  
         {  
-            builder.Entity<LitterType>().HasData(  
-                new LitterType() { Id = 42, OsparID = 1, Description = "Bags" },
-                new LitterType() { Id = 43, OsparID = 2, Description = "Caps/Lids" } 
-            );  
-        }  
+            var litterTypes = ReadLitterTypes(@"data/seedLitterTypes.json");
+
+            builder.Entity<LitterType>().HasData(litterTypes);
+        } 
+
+        public List<LitterType> ReadLitterTypes(string jsonFile) {
+            var litterTypes = new List<LitterType>();
+            using (StreamReader r = new StreamReader(jsonFile))
+            {
+                string json = r.ReadToEnd();
+                litterTypes = JsonConvert.DeserializeObject<List<LitterType>>(json);
+            }
+
+            return litterTypes;
+        }
     }
 }

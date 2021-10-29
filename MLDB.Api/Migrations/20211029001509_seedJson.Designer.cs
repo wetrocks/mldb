@@ -3,14 +3,16 @@ using System;
 using MLDB.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MLDB.Api.Migrations
 {
     [DbContext(typeof(SiteSurveyContext))]
-    partial class SiteSurveyContextModelSnapshot : ModelSnapshot
+    [Migration("20211029001509_seedJson")]
+    partial class seedJson
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,23 +41,14 @@ namespace MLDB.Api.Migrations
                         new
                         {
                             Id = 42,
-                            DadID = "1",
                             Description = "Bags",
                             OsparID = 1
                         },
                         new
                         {
                             Id = 43,
-                            DadID = "2",
                             Description = "Caps/Lids",
                             OsparID = 2
-                        },
-                        new
-                        {
-                            Id = 44,
-                            DadID = "3",
-                            Description = "Bottle",
-                            OsparID = 3
                         });
                 });
 
