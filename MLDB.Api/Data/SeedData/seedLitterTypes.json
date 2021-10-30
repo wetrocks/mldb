@@ -1,0 +1,6 @@
+[
+  { "Id": 42, "OsparID": 1, "DadID": 1, "Description": "Bags" },
+  { "Id": 43, "OsparID": 2, "DadID": 2, "Description": "Caps/Lids" },
+  { "Id": 44, "OsparID": 3, "DadID": 3, "Description": "Bottle" },
+  { "Id": 45, "OsparID": 4, "DadID": 4, "Description": "Styrofoam" }     
+]
