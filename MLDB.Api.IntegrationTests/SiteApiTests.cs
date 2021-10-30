@@ -161,7 +161,9 @@ namespace MLDB.Api.IntegrationTests
         [Test]
         public async Task PutSite_WhenDoesExists_UpdatesSite()
         {
-            var testSite = fixture.Build<Site>().Create();
+            var testSite = fixture.Build<Site>()
+                                .Without( x => x.Surveys )
+                                .Create();
             dbCtx.Sites.Add(testSite);
             dbCtx.SaveChanges();
 

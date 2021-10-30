@@ -107,6 +107,7 @@ namespace MLDB.Api.IntegrationTests.ServiceTests
         {
             var testSite = fixture.Build<Site>()
                             .With( x => x.Id, seedSite.Id)
+                            .Without( x => x.Surveys )
                             .Create();
 
             var returnedSite = await testSvc.update(testSite, seedUser);
@@ -126,6 +127,7 @@ namespace MLDB.Api.IntegrationTests.ServiceTests
         public async Task update_WhenSiteNotExists_ThrowsException()
         {
             var testSite = fixture.Build<Site>()
+                            .Without( x => x.Surveys )
                             .Create();
 
             Func<Task> updateAction = () => testSvc.update(testSite, seedUser);

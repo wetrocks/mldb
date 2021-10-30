@@ -66,6 +66,43 @@ namespace MLDB.Api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("LitterTypeSurveyTemplate", b =>
+                {
+                    b.Property<int>("LitterTypesId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SurveyTemplatesId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("LitterTypesId", "SurveyTemplatesId");
+
+                    b.HasIndex("SurveyTemplatesId");
+
+                    b.ToTable("LitterTypeSurveyTemplate");
+
+                    b.HasData(
+                        new
+                        {
+                            LitterTypesId = 42,
+                            SurveyTemplatesId = "1.0"
+                        },
+                        new
+                        {
+                            LitterTypesId = 43,
+                            SurveyTemplatesId = "1.0"
+                        },
+                        new
+                        {
+                            LitterTypesId = 44,
+                            SurveyTemplatesId = "1.0"
+                        },
+                        new
+                        {
+                            LitterTypesId = 45,
+                            SurveyTemplatesId = "1.0"
+                        });
+                });
+
             modelBuilder.Entity("MLDB.Api.Models.Site", b =>
                 {
                     b.Property<Guid>("Id")
@@ -150,6 +187,41 @@ namespace MLDB.Api.Migrations
                     b.HasKey("IdpId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("SurveyTemplate", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SurveyTemplates");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "1.0",
+                            Description = "Initial template"
+                        });
+                });
+
+            modelBuilder.Entity("LitterTypeSurveyTemplate", b =>
+                {
+                    b.HasOne("LitterType", null)
+                        .WithMany()
+                        .HasForeignKey("LitterTypesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SurveyTemplate", null)
+                        .WithMany()
+                        .HasForeignKey("SurveyTemplatesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MLDB.Api.Models.Site", b =>

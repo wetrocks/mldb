@@ -54,6 +54,7 @@ namespace MLDB.Api.Tests.ServiceTests
 
             var fixture = new Fixture();
             var testSurvey = fixture.Build<Survey>()
+                                    .Without( x => x.LitterItems )
                                     .Without( x => x.Id )
                                     .Create();
 
@@ -74,6 +75,7 @@ namespace MLDB.Api.Tests.ServiceTests
 
             var fixture = new Fixture();
             var testSurvey = fixture.Build<Survey>()
+                                    .Without( x => x.LitterItems )
                                     .Create();
 
             var updatedSurvey = await testSvc.update(testSurvey, testSite.Id, testUser);

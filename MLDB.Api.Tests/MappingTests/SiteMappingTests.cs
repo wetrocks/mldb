@@ -41,6 +41,7 @@ namespace MLDB.Api.Tests.MappingTests {
         public void siteMapping_ToDTO_ShouldIncludeSurveyInfo() {
 
             var testSurvey = fixture.Build<Survey>()
+                                    .Without( x => x.LitterItems )
                                     .With( x => x.StartTimeStamp, new DateTime(1969,4,20,16,20,09))
                                     .Create();
 

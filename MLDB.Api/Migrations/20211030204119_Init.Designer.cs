@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MLDB.Api.Migrations
 {
     [DbContext(typeof(SiteSurveyContext))]
-    [Migration("20211012005802_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20211030204119_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -41,14 +41,67 @@ namespace MLDB.Api.Migrations
                         new
                         {
                             Id = 42,
+                            DadID = "1",
                             Description = "Bags",
                             OsparID = 1
                         },
                         new
                         {
                             Id = 43,
+                            DadID = "2",
                             Description = "Caps/Lids",
                             OsparID = 2
+                        },
+                        new
+                        {
+                            Id = 44,
+                            DadID = "3",
+                            Description = "Bottle",
+                            OsparID = 3
+                        },
+                        new
+                        {
+                            Id = 45,
+                            DadID = "4",
+                            Description = "Styrofoam",
+                            OsparID = 4
+                        });
+                });
+
+            modelBuilder.Entity("LitterTypeSurveyTemplate", b =>
+                {
+                    b.Property<int>("LitterTypesId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SurveyTemplatesId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("LitterTypesId", "SurveyTemplatesId");
+
+                    b.HasIndex("SurveyTemplatesId");
+
+                    b.ToTable("LitterTypeSurveyTemplate");
+
+                    b.HasData(
+                        new
+                        {
+                            LitterTypesId = 42,
+                            SurveyTemplatesId = "1.0"
+                        },
+                        new
+                        {
+                            LitterTypesId = 43,
+                            SurveyTemplatesId = "1.0"
+                        },
+                        new
+                        {
+                            LitterTypesId = 44,
+                            SurveyTemplatesId = "1.0"
+                        },
+                        new
+                        {
+                            LitterTypesId = 45,
+                            SurveyTemplatesId = "1.0"
                         });
                 });
 
@@ -136,6 +189,41 @@ namespace MLDB.Api.Migrations
                     b.HasKey("IdpId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("SurveyTemplate", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SurveyTemplates");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "1.0",
+                            Description = "Initial template"
+                        });
+                });
+
+            modelBuilder.Entity("LitterTypeSurveyTemplate", b =>
+                {
+                    b.HasOne("LitterType", null)
+                        .WithMany()
+                        .HasForeignKey("LitterTypesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SurveyTemplate", null)
+                        .WithMany()
+                        .HasForeignKey("SurveyTemplatesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MLDB.Api.Models.Site", b =>

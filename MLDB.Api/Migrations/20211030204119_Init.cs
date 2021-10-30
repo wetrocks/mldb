@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MLDB.Api.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -23,6 +23,18 @@ namespace MLDB.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SurveyTemplates",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SurveyTemplates", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -36,6 +48,30 @@ namespace MLDB.Api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.IdpId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LitterTypeSurveyTemplate",
+                columns: table => new
+                {
+                    LitterTypesId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SurveyTemplatesId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LitterTypeSurveyTemplate", x => new { x.LitterTypesId, x.SurveyTemplatesId });
+                    table.ForeignKey(
+                        name: "FK_LitterTypeSurveyTemplate_LitterTypes_LitterTypesId",
+                        column: x => x.LitterTypesId,
+                        principalTable: "LitterTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LitterTypeSurveyTemplate_SurveyTemplates_SurveyTemplatesId",
+                        column: x => x.SurveyTemplatesId,
+                        principalTable: "SurveyTemplates",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -117,17 +153,57 @@ namespace MLDB.Api.Migrations
             migrationBuilder.InsertData(
                 table: "LitterTypes",
                 columns: new[] { "Id", "DadID", "Description", "OsparID" },
-                values: new object[] { 42, null, "Bags", 1 });
+                values: new object[] { 42, "1", "Bags", 1 });
 
             migrationBuilder.InsertData(
                 table: "LitterTypes",
                 columns: new[] { "Id", "DadID", "Description", "OsparID" },
-                values: new object[] { 43, null, "Caps/Lids", 2 });
+                values: new object[] { 43, "2", "Caps/Lids", 2 });
+
+            migrationBuilder.InsertData(
+                table: "LitterTypes",
+                columns: new[] { "Id", "DadID", "Description", "OsparID" },
+                values: new object[] { 44, "3", "Bottle", 3 });
+
+            migrationBuilder.InsertData(
+                table: "LitterTypes",
+                columns: new[] { "Id", "DadID", "Description", "OsparID" },
+                values: new object[] { 45, "4", "Styrofoam", 4 });
+
+            migrationBuilder.InsertData(
+                table: "SurveyTemplates",
+                columns: new[] { "Id", "Description" },
+                values: new object[] { "1.0", "Initial template" });
+
+            migrationBuilder.InsertData(
+                table: "LitterTypeSurveyTemplate",
+                columns: new[] { "LitterTypesId", "SurveyTemplatesId" },
+                values: new object[] { 42, "1.0" });
+
+            migrationBuilder.InsertData(
+                table: "LitterTypeSurveyTemplate",
+                columns: new[] { "LitterTypesId", "SurveyTemplatesId" },
+                values: new object[] { 43, "1.0" });
+
+            migrationBuilder.InsertData(
+                table: "LitterTypeSurveyTemplate",
+                columns: new[] { "LitterTypesId", "SurveyTemplatesId" },
+                values: new object[] { 44, "1.0" });
+
+            migrationBuilder.InsertData(
+                table: "LitterTypeSurveyTemplate",
+                columns: new[] { "LitterTypesId", "SurveyTemplatesId" },
+                values: new object[] { 45, "1.0" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_LitterItem_LitterTypeId",
                 table: "LitterItem",
                 column: "LitterTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LitterTypeSurveyTemplate_SurveyTemplatesId",
+                table: "LitterTypeSurveyTemplate",
+                column: "SurveyTemplatesId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sites_CreateUserIdpId",
@@ -151,10 +227,16 @@ namespace MLDB.Api.Migrations
                 name: "LitterItem");
 
             migrationBuilder.DropTable(
-                name: "LitterTypes");
+                name: "LitterTypeSurveyTemplate");
 
             migrationBuilder.DropTable(
                 name: "Surveys");
+
+            migrationBuilder.DropTable(
+                name: "LitterTypes");
+
+            migrationBuilder.DropTable(
+                name: "SurveyTemplates");
 
             migrationBuilder.DropTable(
                 name: "Sites");
