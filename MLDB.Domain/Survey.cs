@@ -25,7 +25,6 @@ namespace MLDB.Domain
         public Decimal TotalKg{ get; set; }
 
         private  List<LitterItem> _litterItems = new List<LitterItem>();
-
         public IReadOnlyList<LitterItem> LitterItems =>  _litterItems;
 
         public Survey(Guid siteId, SurveyTemplate template, string createUserId) {            

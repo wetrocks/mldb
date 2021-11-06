@@ -13,12 +13,20 @@ namespace MLDB.Domain
         private readonly List<LitterType> _litterTypes;
         public IReadOnlyList<LitterType> LitterTypes => _litterTypes;
 
-        public SurveyTemplate(string id, List<LitterType> litterTypes) {
-            if( id == null || litterTypes == null ) {
+        // needed for EF, can't bind navigation properties to ctor args 
+        private SurveyTemplate(string id) {
+            if( id == null ) {
                 throw new ArgumentNullException();
             }
 
             Id = id;
+        }
+
+        public SurveyTemplate(string id, List<LitterType> litterTypes) : this(id) {
+            if( litterTypes == null ) {
+                throw new ArgumentNullException();
+            }
+
             _litterTypes = litterTypes;
         }
 
