@@ -75,6 +75,22 @@ namespace MLDB.Infrastructure.IntegrationTests
         }
 
         [Test]
+        public void exists_whenNotExists_ReturnsFalse()
+        {
+            var surveyExists = testRepo.exists(fixture.Create<Guid>());
+
+            surveyExists.Should().BeFalse();
+        }
+
+        [Test]
+        public void exists_whenExists_ReturnsTrue()
+        {
+            var surveyExists = testRepo.exists(seedSurvey.Id);
+
+            surveyExists.Should().BeTrue();
+        }
+
+        [Test]
         public async Task findSurvey_whenNotExists_ReturnsNull()
         {
             var testSurvey = await testRepo.findAsync(fixture.Create<Guid>());

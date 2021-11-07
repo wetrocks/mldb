@@ -15,8 +15,8 @@ namespace MLDB.Infrastructure.Repositories
             _dbCtx = dbContext;
         }
 
-        public async Task<bool> existsAsync(Guid id) {
-            return false;
+        public bool exists(Guid id) {
+            return _dbCtx.Surveys.Any( x => x.Id == id );
         }
 
         public async Task<Survey> findAsync(Guid id) {

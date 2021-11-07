@@ -6,7 +6,7 @@ namespace MLDB.Domain
 {
     public interface ISurveyRepository {
 
-        public Task<bool> existsAsync(Guid id);
+        public bool exists(Guid id);
 
         public Task<Survey> findAsync(Guid id);
 
