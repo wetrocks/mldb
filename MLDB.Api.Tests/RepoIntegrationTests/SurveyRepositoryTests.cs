@@ -18,6 +18,7 @@ using AutoFixture;
 
 namespace MLDB.Api.Tests.RepoIntegrationTests
 {
+    [Obsolete]
     [TestOf(typeof(SurveyRepository))]
     public class SurveyRepositoryTests
     {

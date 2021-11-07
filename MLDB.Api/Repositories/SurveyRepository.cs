@@ -10,6 +10,7 @@ using System.Linq;
 
 namespace MLDB.Api.Repositories
 {
+    [Obsolete]
     public class SurveyRepository : ISurveyRepository {
 
         private readonly SiteSurveyContext _dbCtx;

@@ -19,7 +19,7 @@ namespace MLDB.Infrastructure.Repositories
 
 
 
-        // public DbSet<Survey> Surveys { get; set; }
+        public DbSet<Survey> Surveys { get; set; }
 
         // public DbSet<User> Users { get;  set; }
 
@@ -36,12 +36,17 @@ namespace MLDB.Infrastructure.Repositories
                         .HasMany( st => st.LitterTypes )
                         .WithMany("Surveys");
                         
-        //     modelBuilder.Entity<Survey>().OwnsMany(
-        //         s => s.LitterItems, li => 
-        //         {
-        //             li.WithOwner().HasForeignKey("SurveyId");
-        //             li.HasKey("SurveyId", "LitterTypeId");
-        //         });
+            modelBuilder.Entity<Survey>().OwnsMany(
+                s => s.LitterItems, li => 
+                {
+                    li.WithOwner().HasForeignKey("SurveyId");
+                    li.HasKey("SurveyId", "LitterTypeId");
+                });
+
+            modelBuilder.Entity<Survey>()
+                        .HasOne<Site>()
+                        .WithMany()
+                        .HasForeignKey( x => x.SiteId );
 
         //     this.PopulateSurveyTemplates(modelBuilder);
         // }
