@@ -27,16 +27,16 @@ namespace MLDB.Domain
         private  List<LitterItem> _litterItems = new List<LitterItem>();
         public IReadOnlyList<LitterItem> LitterItems =>  _litterItems;
 
-        public Survey(Guid siteId, SurveyTemplate template, string createUserId) {            
-            if( template == null || template.LitterTypes.Count == 0) {
-                throw new ArgumentException("Survey template must not be null and contain at least one litter type");
+        public Survey(Guid siteId, IList<int> litterTypes, string createUserId) {            
+            if( litterTypes == null || litterTypes.Count == 0) {
+                throw new ArgumentException("Cannot create a survey without litterTypes");
             }
             
             SiteId = siteId;
             CreateUserId = createUserId;
             CreateTimestamp = DateTime.UtcNow;
 
-            _litterItems.AddRange(template.LitterTypes.Select( x => new LitterItem(x.Id) ));
+            _litterItems.AddRange(litterTypes.Select( x => new LitterItem(x) ));
         }
     }
 }

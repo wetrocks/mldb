@@ -4,6 +4,7 @@ using FluentAssertions;
 using System;
 using AutoFixture;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MLDB.Domain.Tests
 {
@@ -22,37 +23,34 @@ namespace MLDB.Domain.Tests
         {
             Assert.Throws<ArgumentException>( () => 
             { 
-                var Survey = new Survey(fixture.Create<Guid>(), null, fixture.Create<string>());  
+                var Survey = new Survey(fixture.Create<Guid>(), (IList<int>)null, fixture.Create<string>());  
             });
         }
 
         [Test]
         public void CreateSurvey_WhenTemplateHasNoLitterTypes_throwsException()
-        {
-            var emptyTemplate = new SurveyTemplate( fixture.Create<string>(), new List<LitterType>() );
-            
+        {            
             Assert.Throws<ArgumentException>( () => 
             { 
-                var Survey = new Survey(fixture.Create<Guid>(), emptyTemplate, fixture.Create<string>());  
+                var Survey = new Survey(fixture.Create<Guid>(), new List<int>(), fixture.Create<string>());  
             });
         }
 
         [Test]
         public void CreateSurvey_setsCreateTimestamp()
         {
-            var testTemplate = fixture.Build<SurveyTemplate>().Create();
+            var testSurvey = new Survey(fixture.Create<Guid>(), fixture.CreateMany<int>().ToList(), fixture.Create<string>());  
 
-            var testSurvey = new Survey(fixture.Create<Guid>(), testTemplate, fixture.Create<string>());  
+            testSurvey.CreateTimestamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
         }
 
         [Test]
         public void CreateSurvey_InitializesLitterItems()
         {
-            var testTemplate = fixture.Build<SurveyTemplate>().Create();
+            var itemTypes = fixture.CreateMany<int>().ToList();
+            var testSurvey = new Survey(fixture.Create<Guid>(), itemTypes, fixture.Create<string>()); 
 
-            var testSurvey = new Survey(fixture.Create<Guid>(), testTemplate, fixture.Create<string>()); 
-
-            testSurvey.LitterItems.Should().HaveCount( testTemplate.LitterTypes.Count);
+            testSurvey.LitterItems.Should().HaveSameCount(itemTypes);
         }
     }
 }
