@@ -10,14 +10,14 @@ using AutoFixture;
 
 namespace MLDB.Infrastructure.IntegrationTests
 {
-    [TestOf(typeof(SurveyTemplateRepository))]
-    public class SurveyTemplateRepositoryTests
+    [TestOf(typeof(SiteRepository))]
+    public class SiteRepositoryTests
     {
         private SqliteConnection conn;
         private DbContextOptions<SiteSurveyContext> ctxOptions;
         private SiteSurveyContext testCtx;
 
-        private ISurveyTemplateRepository testRepo;
+        private ISiteRepository testRepo;
 
         private Fixture fixture;
 
@@ -37,7 +37,7 @@ namespace MLDB.Infrastructure.IntegrationTests
 
             // seedTestData();
 
-            testRepo = new SurveyTemplateRepository(testCtx);
+            testRepo = new SiteRepository(testCtx);
 
             fixture = new AutoFixture.Fixture();
 
@@ -53,9 +53,9 @@ namespace MLDB.Infrastructure.IntegrationTests
         }
 
         [Test]
-        public async Task getTemplate_whenNotExists_ReturnsNull()
+        public async Task findSite_whenNotExists_ReturnsNull()
         {
-            var testTemplate = await testRepo.getTemplateAsync(fixture.Create<string>());
+            var testTemplate = await testRepo.findAsync(fixture.Create<Guid>());
 
             testTemplate.Should().BeNull();
         }

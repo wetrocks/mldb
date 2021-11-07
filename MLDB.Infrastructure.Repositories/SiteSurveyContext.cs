@@ -17,13 +17,15 @@ namespace MLDB.Infrastructure.Repositories
         {
         }
 
-        // public DbSet<Site> Sites { get; set; }
+
 
         // public DbSet<Survey> Surveys { get; set; }
 
         // public DbSet<User> Users { get;  set; }
 
         public DbSet<SurveyTemplate> SurveyTemplates{ get; set; }
+
+        public DbSet<Site> Sites { get; set; }
 
         // public DbSet<LitterType> LitterTypes { get;  set; }
 
