@@ -16,6 +16,11 @@ namespace MLDB.Domain
         public Site( string name, string createUserId ) {
             Name = name;
             CreateUserId = createUserId;
+            CreateTimestamp = DateTime.UtcNow;
+        }
+
+        public Site( Guid Id, string name, string createUserId ) : this(name, createUserId) {
+            this.Id = Id;
         }
     }
 }

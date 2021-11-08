@@ -10,8 +10,6 @@ namespace MLDB.Domain
 
         public Task<IList<Site>> getAll();
 
-        public Task<bool> existsAsync(Guid id);
-
         public Task<Site> findAsync(Guid id);
 
         public Task<Site> insertAsync(Site site);

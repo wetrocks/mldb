@@ -8,7 +8,8 @@ using System.Linq;
 
 namespace MLDB.Domain.Tests
 {
-    public class Tests
+    [TestOf(typeof(Survey))]
+    public class SurveyTests
     {
         private Fixture fixture;
 

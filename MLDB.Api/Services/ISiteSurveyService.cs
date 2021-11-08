@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace MLDB.Api.Services
 {
+    [Obsolete]
     public interface ISiteSurveyService {
 
         public Task<Survey> getSurvey(Guid surveyId);

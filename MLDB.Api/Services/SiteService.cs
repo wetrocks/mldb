@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MLDB.Api.Services
 {
+    [Obsolete]
     public class SiteService : ISiteService {
 
         private readonly SiteSurveyContext _dbCtx;

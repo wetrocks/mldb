@@ -21,9 +21,13 @@ namespace MLDB.Infrastructure.IntegrationTests
 
         private Fixture fixture;
 
+        private Site seedSite;
+
         [SetUp]
         public void Setup()
         {
+            fixture = new Fixture();
+
             conn = new SqliteConnection("DataSource=:memory:");
             conn.Open();
 
@@ -35,14 +39,10 @@ namespace MLDB.Infrastructure.IntegrationTests
             testCtx = new SiteSurveyContext(ctxOptions);
             testCtx.Database.EnsureCreated();
 
-            // seedTestData();
+            seedTestData();
 
             testRepo = new SiteRepository(testCtx);
 
-            fixture = new AutoFixture.Fixture();
-
-            // // make user "exist"
-            // testCtx.Attach(seedUser);
         }
 
         [TearDown]
@@ -52,12 +52,73 @@ namespace MLDB.Infrastructure.IntegrationTests
             conn.Close();
         }
 
-        [Test]
-        public async Task findSite_whenNotExists_ReturnsNull()
-        {
-            var testTemplate = await testRepo.findAsync(fixture.Create<Guid>());
+        private void seedTestData() {
+            using( var seedCtx = new SiteSurveyContext(ctxOptions)) {
+                seedSite = fixture.Build<Site>()
+                                    .Create();
+                seedCtx.Add(seedSite);
 
-            testTemplate.Should().BeNull();
+                seedCtx.SaveChanges();
+            };
+        }
+
+        [Test]
+        public async Task getAll_ReturnsAll()
+        {
+            var allSites = await testRepo.getAll();
+
+            allSites.Should().ContainEquivalentOf(seedSite);
+        }
+
+        [Test]
+        public async Task find_WhenNotExists_ReturnsNull()
+        {
+            var testSite = await testRepo.findAsync(fixture.Create<Guid>());
+
+            testSite.Should().BeNull();
+        }
+
+        [Test]
+        public async Task find_WhenExists_ReturnsSite()
+        {
+            var testSite = await testRepo.findAsync(seedSite.Id);
+
+            testSite.Should().BeEquivalentTo(seedSite);
+        }
+
+        [Test]
+        public async Task insert_AddsNewSite()
+        {
+            var testSite = fixture.Build<Site>().Create();
+
+            var created = await testRepo.insertAsync(testSite);
+            testCtx.SaveChanges();
+
+            created.Id.Should().NotBeEmpty();
+
+            using(var assertCtx = new SiteSurveyContext(ctxOptions)) {
+                var inserted = assertCtx.Sites.Find(created.Id);
+                inserted.Should().BeEquivalentTo(created);
+            }
+        }
+
+        [Test]
+        public async Task update_withChangeToFields_UpdatesSite()
+        {
+            var testSite = new Site(seedSite.Id, seedSite.Name, seedSite.CreateUserId);
+            
+            testSite.Name = fixture.Create<string>("newName");
+
+            var updated = await testRepo.updateAsync(testSite);
+            testCtx.SaveChanges();
+            
+            using( var assertCtx = new SiteSurveyContext(ctxOptions) ) {
+                var testUpdated = assertCtx.Sites.Find(seedSite.Id);
+                testUpdated.Should().BeEquivalentTo(testSite, opt => opt
+                    .Excluding( x => x.CreateUserId )
+                    .Excluding( x => x.CreateTimestamp )
+                );
+           }
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 namespace MLDB.Api.Services
 {
+    [Obsolete]
     public interface ISurveyRepository {
 
         public bool exists(Guid id);

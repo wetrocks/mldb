@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using  MLDB.Domain;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace MLDB.Infrastructure.Repositories
 {
@@ -17,10 +18,10 @@ namespace MLDB.Infrastructure.Repositories
 
         public async Task<IList<Site>> getAll()
         {
-            return null;
+            return await _dbCtx.Sites.ToListAsync();
         }
 
-        public async Task<bool> existsAsync(Guid id)
+        public bool exists(Guid id)
         {
             return false;
         }
@@ -34,11 +35,18 @@ namespace MLDB.Infrastructure.Repositories
 
         public async Task<Site> insertAsync(Site site)
         {
-            return null;
+            var created = await _dbCtx.Sites.AddAsync(site);
+
+            return created.Entity;
         }
         public async Task<Site> updateAsync(Site site)
         {
-            return null;
+            var orig = await _dbCtx.Sites.FindAsync(site.Id);
+
+            orig.Name = site.Name;
+
+            var updated = _dbCtx.Sites.Update(orig);
+            return updated.Entity;
         }
     }
 }
