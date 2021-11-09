@@ -129,13 +129,11 @@ namespace MLDB.Api.IntegrationTests
 
             var result = await client.PostAsJsonAsync($"/site", testDTO);
 
-            // most recently created site, need this to check return json
-            var createdSite = dbCtx.Sites.OrderByDescending( x => x.CreateTimestamp ).FirstOrDefault();
-
             Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+            
             var body = await result.Content.ReadAsStringAsync();
             JToken.Parse(body).Should().ContainSubtree(
-                String.Format("{{ 'name' : '{0}' , 'createUserId' : '{1}'}}", createdSite.Name, testToken.sub));
+                String.Format("{{ 'name' : '{0}' , 'createUserId' : '{1}'}}", testDTO.Name, testToken.sub));
         }
 
         [Test]
