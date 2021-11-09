@@ -1,17 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MLDB.Api.Models;
-using System.Security.Claims;
 using MLDB.Api.Services;
 using AutoMapper;
 using MLDB.Api.DTO;
-using Microsoft.AspNetCore.Authorization;
-using System.Data;
+using MLDB.Domain;
 
 namespace MLDB.Api.Controllers
 {
@@ -21,23 +15,23 @@ namespace MLDB.Api.Controllers
     {
         private readonly IMapper _mapper;
 
-        private readonly ISiteService  _siteSvc;
-
         private readonly IUserService _userSvc;
 
-        public SiteController(IUserService userService, IMapper mapper, ISiteService siteService)
+        private readonly ISiteRepository _siteRepo;
+
+        public SiteController(IUserService userService, IMapper mapper, ISiteRepository siteRepo)
         {
-            _mapper  = mapper;
-            _siteSvc = siteService;
+            _mapper = mapper;
             _userSvc = userService;
+            _siteRepo = siteRepo;
         }
 
         // GET: /site
         [HttpGet]
         public async Task<ActionResult<List<SiteDTO>>> GetSites()
         {
-            var sites =  await _siteSvc.getAll();
-            
+            var sites = await _siteRepo.getAll();
+
             return _mapper.Map<IList<Site>, List<SiteDTO>>(sites);
         }
 
@@ -45,7 +39,7 @@ namespace MLDB.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<SiteDTO>> GetSite(Guid id)
         {
-            var site = await _siteSvc.getSite(id);
+            var site = await _siteRepo.findAsync(id);
 
             if (site == null)
             {
@@ -66,10 +60,10 @@ namespace MLDB.Api.Controllers
 
             var site = _mapper.Map<Site>(siteDTO);
 
-            User requestUser = _userSvc.findOrAddUser(HttpContext.User);
+            //     MLDB.Api.Models.User requestUser = _userSvc.findOrAddUser(HttpContext.User);
             try
             {
-                await _siteSvc.update(site, requestUser);
+                await _siteRepo.updateAsync(site);
             }
             catch (System.Data.RowNotInTableException)
             {
@@ -81,14 +75,14 @@ namespace MLDB.Api.Controllers
 
         // POST: /site
         [HttpPost]
-        public async Task<ActionResult<Site>> PostSite([FromBody]SiteDTO siteDTO)
+        public async Task<ActionResult<Site>> PostSite([FromBody] SiteDTO siteDTO)
         {
             var site = _mapper.Map<Site>(siteDTO);
 
-            User requestUser = _userSvc.findOrAddUser(HttpContext.User);
+            // MLDB.Api.Models.User requestUser = _userSvc.findOrAddUser(HttpContext.User);
 
-            var createdSite = await _siteSvc.create(site, requestUser);
-           
+            var createdSite = await _siteRepo.insertAsync(site);
+
             return CreatedAtAction("GetSite", new { id = createdSite.Id }, createdSite);
         }
     }

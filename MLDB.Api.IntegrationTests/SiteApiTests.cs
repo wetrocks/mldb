@@ -12,12 +12,13 @@ using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
-using MLDB.Api.Models;
 using FluentAssertions.Json;
 using AutoFixture;
 using Newtonsoft.Json.Linq;
 using MLDB.Api.DTO;
 using System.Net.Http.Json;
+using MLDB.Infrastructure.Repositories;
+using MLDB.Domain;
 
 
 namespace MLDB.Api.IntegrationTests
@@ -27,6 +28,7 @@ namespace MLDB.Api.IntegrationTests
     {
         APITestWebApplicationFactory factory;
         HttpClient client;
+
         SiteSurveyContext dbCtx;
         Fixture fixture;
 
@@ -40,7 +42,6 @@ namespace MLDB.Api.IntegrationTests
 
             var scope = (factory.Services.GetRequiredService<IServiceScopeFactory>()).CreateScope();
             dbCtx = scope.ServiceProvider.GetRequiredService<SiteSurveyContext>();
-
             dbCtx.Database.EnsureCreated();
 
             fixture = new Fixture();
@@ -60,7 +61,6 @@ namespace MLDB.Api.IntegrationTests
         public async Task GetSites_ReturnsAllSites()
         {
             var existingSite = fixture.Build<Site>()
-                                    .Without( x => x.Surveys )
                                     .Create();
             dbCtx.Sites.Add(existingSite);
             dbCtx.SaveChanges();
@@ -97,7 +97,6 @@ namespace MLDB.Api.IntegrationTests
         public async Task GetSite_WhenExists_ReturnsOK()
         {
             var existingSite = fixture.Build<Site>()
-                                    .Without( x => x.Surveys )
                                     .Create();
             dbCtx.Sites.Add(existingSite);
             dbCtx.SaveChanges();
@@ -123,19 +122,20 @@ namespace MLDB.Api.IntegrationTests
         [Test]
         public async Task PostSite_CreatesSiteAndReturnsJson()
         {
-            var testDTO = fixture.Build<SiteDTO>().Create();
+            var testDTO = fixture.Build<SiteDTO>()
+                                 .Without( x => x.Id ).Create();
             
             client.SetFakeBearerToken((object)testToken);
 
             var result = await client.PostAsJsonAsync($"/site", testDTO);
 
-            // need this to check return json
-            var createdSite = dbCtx.Sites.OrderByDescending( x => x.CreateTimestamp ).SingleOrDefault();
+            // most recently created site, need this to check return json
+            var createdSite = dbCtx.Sites.OrderByDescending( x => x.CreateTimestamp ).FirstOrDefault();
 
             Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
             var body = await result.Content.ReadAsStringAsync();
             JToken.Parse(body).Should().ContainSubtree(
-                String.Format("{{ 'id' : '{0}', 'name' : '{1}' }}", createdSite.Id, testDTO.Name));
+                String.Format("{{ 'name' : '{0}' , 'createUserId' : '{1}'}}", createdSite.Name, testToken.sub));
         }
 
         [Test]
@@ -162,7 +162,6 @@ namespace MLDB.Api.IntegrationTests
         public async Task PutSite_WhenDoesExists_UpdatesSite()
         {
             var testSite = fixture.Build<Site>()
-                                .Without( x => x.Surveys )
                                 .Create();
             dbCtx.Sites.Add(testSite);
             dbCtx.SaveChanges();

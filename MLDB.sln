@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MLDB.Api", "MLDB.Api\MLDB.Api.csproj", "{6A1A7A68-3C1E-48F0-A809-634A063FB066}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MLDB.Api.Tests", "MLDB.Api.Tests\MLDB.Api.Tests.csproj", "{6A903813-09BD-4A35-815C-30814C3FF3A3}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MLDB.Api.IntegrationTests", "MLDB.Api.IntegrationTests\MLDB.Api.IntegrationTests.csproj", "{4D155BF8-C04C-4758-BC9A-E7D9597BF701}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MLDB.Domain", "MLDB.Domain\MLDB.Domain.csproj", "{3010BFB8-AAEC-4399-9EE4-5F230BECF276}"

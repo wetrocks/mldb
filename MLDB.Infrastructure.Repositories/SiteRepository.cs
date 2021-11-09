@@ -42,7 +42,10 @@ namespace MLDB.Infrastructure.Repositories
         public async Task<Site> updateAsync(Site site)
         {
             var orig = await _dbCtx.Sites.FindAsync(site.Id);
-
+            if( orig == null ) {
+                // TODO: maybe throw something better?
+                throw new System.Data.RowNotInTableException();
+            }
             orig.Name = site.Name;
 
             var updated = _dbCtx.Sites.Update(orig);
