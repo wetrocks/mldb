@@ -83,11 +83,7 @@ namespace MLDB.Api.IntegrationTests
         [Test]
         public async Task GetSite_WhenNotExists_Returns404()
         {
-            dynamic data = new ExpandoObject();
-            data.sub = "testuser";
-            data.role = new [] {"sub_role","admin"};
-
-            client.SetFakeBearerToken((object)data);
+            client.SetFakeBearerToken((object)testToken);
 
             var response = await client.GetAsync($"/site/{Guid.NewGuid()}");
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);

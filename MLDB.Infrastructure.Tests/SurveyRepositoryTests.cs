@@ -93,9 +93,17 @@ namespace MLDB.Infrastructure.IntegrationTests
         [Test]
         public async Task findSurvey_whenNotExists_ReturnsNull()
         {
-            var testSurvey = await testRepo.findAsync(fixture.Create<Guid>());
+            var testSurveys = await testRepo.findAsync(fixture.Create<Guid>());
 
-            testSurvey.Should().BeNull();
+            testSurveys.Should().BeNull();
+        }
+
+        [Test]
+        public async Task getSurveysForSite_whenNotExists_ReturnsEmpty()
+        {
+            var testSurveys = await testRepo.getSurveysForSite(seedSite.Id);
+
+            testSurveys.Should().OnlyContain( x => x.Id == seedSurvey.Id );
         }
 
         [Test]

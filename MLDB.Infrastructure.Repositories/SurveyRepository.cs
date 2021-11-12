@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using  MLDB.Domain;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace MLDB.Infrastructure.Repositories
 {
@@ -25,6 +26,13 @@ namespace MLDB.Infrastructure.Repositories
             return survey;
         }
 
+        public Task<List<Survey>> getSurveysForSite(Guid siteId) {
+            var surveys = _dbCtx.Surveys.Where( x => x.SiteId == siteId ).ToListAsync();
+
+            return surveys;
+        }
+
+
         public async Task<Survey> insertAsync(Survey survey) {
             var created = await _dbCtx.Surveys.AddAsync(survey);
 
@@ -33,6 +41,10 @@ namespace MLDB.Infrastructure.Repositories
 
         public async Task<Survey> updateAsync(Survey survey) {
             var orig = await _dbCtx.Surveys.FindAsync(survey.Id);
+            if( orig == null ) {
+                // TODO: maybe throw something better?
+                throw new System.Data.RowNotInTableException();
+            }
 
             orig.CoordinatorName = survey.CoordinatorName;
             orig.StartTimeStamp = survey.StartTimeStamp;

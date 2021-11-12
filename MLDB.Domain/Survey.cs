@@ -44,5 +44,10 @@ namespace MLDB.Domain
         public Survey(Guid id, Guid siteId, IList<int> litterTypes, string createUserId) : this(siteId, litterTypes, createUserId) {            
             this.Id = id;
         }
+
+        public void updateLitterCount(int litterTypeId, int count) {
+            var litterItem = _litterItems.Single( x => x.LitterTypeId == litterTypeId );
+            litterItem.Count = count;
+        }
     }
 }

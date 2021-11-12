@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using System;
+using System.Collections.Generic;
 
 
 namespace MLDB.Domain
@@ -13,5 +14,7 @@ namespace MLDB.Domain
         public Task<Survey> insertAsync(Survey survey);
 
         public Task<Survey> updateAsync(Survey survey);
+
+        public Task<List<Survey>> getSurveysForSite(Guid siteId);
     }
 }
