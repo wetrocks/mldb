@@ -4,11 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="Data/SeedData/seedLitterTypes.json">
-      <Link>seedData/seedLitterTypes.json</Link>
-    </EmbeddedResource>
-  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />

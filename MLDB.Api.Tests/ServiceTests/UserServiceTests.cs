@@ -30,20 +30,7 @@ namespace MLDB.Api.Tests.ServiceTests
         [SetUp]
         public void Setup()
         {
-            var conn = new SqliteConnection("DataSource=:memory:");
-            conn.Open(); // open connection to use
-
-            var options = new DbContextOptionsBuilder<SiteSurveyContext>()
-                        .UseSqlite(conn)
-                        .Options;
-            var ctx = new SiteSurveyContext(options);
-            ctx.Database.EnsureCreated();
-
-            User newUser = new User("testIdpUserName");
-            ctx.Add(newUser);
-            ctx.SaveChanges();
-
-            testSvc = new UserService(ctx);
+            testSvc = new UserService();
         }
 
         [Test]
@@ -92,23 +79,5 @@ namespace MLDB.Api.Tests.ServiceTests
             testUser.Name.Should().Be(null);
         }
 
-        [Test]
-        public void findUser_ShouldReturnNull_WhenNotExist()  {
-            Claim[] claims = { new Claim(ClaimTypes.NameIdentifier, "NOT_EXISTS") };
-            var principal = createPrinicipal( claims );
-
-            var testUser = testSvc.findUser(principal);
-
-            testUser.Should().Be(null);
-        }
-
-        [Test]
-        public void findUser_ShouldReturnUser_WhenExists()  {
-            var principal = createPrinicipal(ALL_CLAIMS);
-
-            var testUser = testSvc.findUser(principal);
-
-            testUser.IdpId.Should().Be("testIdpUserName");
-        }
     }
 }

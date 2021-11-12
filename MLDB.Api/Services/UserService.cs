@@ -8,11 +8,6 @@ namespace MLDB.Api.Services
 {
     public class UserService : IUserService {
         
-        private readonly SiteSurveyContext _dbCtx;
-
-        public UserService(SiteSurveyContext context) { 
-            _dbCtx = context;
-        }
 
         private String getIdPId(ClaimsPrincipal principal) {
             return principal.Claims.Single(x => x.Type.Equals(ClaimTypes.NameIdentifier)).Value;
@@ -31,22 +26,6 @@ namespace MLDB.Api.Services
             user.UpdateTime = DateTime.MinValue;
 
             return user;
-        }
-
-         public User findUser(ClaimsPrincipal principal) {       
-            return _dbCtx.Users.Find( getIdPId(principal)  );
-         }
-
-        public User findOrAddUser(ClaimsPrincipal principal) {
-            var userId = this.getIdPId(principal);
-
-            var user = _dbCtx.Users.Find(userId);
-            if( user == null ) {
-               user = this.createFromClaimsPrinicpal(principal);
-               _dbCtx.Add(user);
-            }
-
-            return user;            
         }
    }
 }

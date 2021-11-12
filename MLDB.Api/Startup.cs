@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
-using MLDB.Api.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
@@ -74,9 +73,6 @@ namespace MLDB.Api
                                                     .AllowAnyHeader();
                             });
                     });
-
-            services.AddDbContext<SiteSurveyContextOrig>(opt =>
-               opt.UseSqlite(Configuration.GetConnectionString("mldbDBOrig")));
 
             services.AddDbContext<SiteSurveyContext>(opt =>
                opt.UseSqlite(Configuration.GetConnectionString("mldbDB"), b => b.MigrationsAssembly("MLDB.Api")));   

@@ -12,8 +12,8 @@ namespace MLDB.Api.Services
 
         public User createFromClaimsPrinicpal(ClaimsPrincipal principal);
 
-        public User findUser(ClaimsPrincipal principal);
+        // public User findUser(ClaimsPrincipal principal);
 
-        public User findOrAddUser(ClaimsPrincipal principal);
+        // public User findOrAddUser(ClaimsPrincipal principal);
     }
 }
