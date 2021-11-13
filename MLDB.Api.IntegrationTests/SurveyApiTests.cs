@@ -156,7 +156,7 @@ namespace MLDB.Api.IntegrationTests
             
             var body = await result.Content.ReadAsStringAsync();
             JToken.Parse(body).Should().ContainSubtree(
-                String.Format("{{ 'coordinator' : '{0}' }}", testDTO.Coordinator));
+                String.Format("{{ 'siteId' : '{0}', 'coordinator' : '{1}' }}", seedSite.Id, testDTO.Coordinator));
         }
 
         [Test]

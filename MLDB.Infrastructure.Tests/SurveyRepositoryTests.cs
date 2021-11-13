@@ -125,7 +125,6 @@ namespace MLDB.Infrastructure.IntegrationTests
         }
 
         [Test]
-        [Ignore("check fk")]
         public void insert_whenSiteNotExist_throwsException()
         {
             var testSurvey = new Survey(fixture.Create<Guid>(), 
@@ -134,6 +133,7 @@ namespace MLDB.Infrastructure.IntegrationTests
 
             Assert.ThrowsAsync<DbUpdateException>( async () => { 
                 await testRepo.insertAsync(testSurvey); 
+                testCtx.SaveChanges();
             });
         }
 

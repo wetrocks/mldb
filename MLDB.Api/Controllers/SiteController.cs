@@ -6,6 +6,7 @@ using MLDB.Api.Services;
 using AutoMapper;
 using MLDB.Api.DTO;
 using MLDB.Domain;
+using MLDB.Infrastructure.Repositories;
 
 namespace MLDB.Api.Controllers
 {
@@ -19,11 +20,14 @@ namespace MLDB.Api.Controllers
 
         private readonly ISiteRepository _siteRepo;
 
-        public SiteController(IUserService userService, IMapper mapper, ISiteRepository siteRepo)
+        private readonly SiteSurveyContext _dbCtx;
+
+        public SiteController(IUserService userService, IMapper mapper, ISiteRepository siteRepo, SiteSurveyContext ctx)
         {
             _mapper = mapper;
             _userSvc = userService;
             _siteRepo = siteRepo;
+            _dbCtx = ctx;
         }
 
         // GET: /site
@@ -64,6 +68,7 @@ namespace MLDB.Api.Controllers
             try
             {
                 await _siteRepo.updateAsync(site);
+                await _dbCtx.SaveChangesAsync();
             }
             catch (System.Data.RowNotInTableException)
             {
@@ -75,7 +80,7 @@ namespace MLDB.Api.Controllers
 
         // POST: /site
         [HttpPost]
-        public async Task<ActionResult<Site>> PostSite([FromBody] SiteDTO siteDTO)
+        public async Task<ActionResult<SiteDTO>> PostSite([FromBody] SiteDTO siteDTO)
         {
             var requestUser = _userSvc.createFromClaimsPrinicpal(HttpContext.User);
             
@@ -84,7 +89,9 @@ namespace MLDB.Api.Controllers
             var site = _mapper.Map<Site>(siteToCreate);
             var createdSite = await _siteRepo.insertAsync(site);
 
-            return CreatedAtAction("GetSite", new { id = createdSite.Id }, createdSite);
+            await _dbCtx.SaveChangesAsync();
+
+            return CreatedAtAction("GetSite", new { id = createdSite.Id }, _mapper.Map<SiteDTO>(createdSite));
         }
     }
 }

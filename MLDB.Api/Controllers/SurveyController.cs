@@ -9,6 +9,7 @@ using MLDB.Api.Services;
 using AutoMapper;
 using MLDB.Api.DTO;
 using MLDB.Domain;
+using MLDB.Infrastructure.Repositories;
 
 namespace MLDB.Api.Controllers
 {
@@ -21,11 +22,14 @@ namespace MLDB.Api.Controllers
 
         private readonly ISurveyRepository _surveyRepo;
 
-        public SurveyController(IUserService userService, ISurveyRepository surveyRepo, IMapper mapper)
+        private readonly SiteSurveyContext _dbCtx;
+
+        public SurveyController(IUserService userService, ISurveyRepository surveyRepo, IMapper mapper, SiteSurveyContext ctx)
         {
             _userSvc = userService;
             _surveyRepo = surveyRepo;
             _mapper = mapper;
+            _dbCtx = ctx;
         }
 
         // GET: /site/{siteid}/survey
@@ -72,6 +76,7 @@ namespace MLDB.Api.Controllers
             try
             {
                 await _surveyRepo.updateAsync(survey);
+                await _dbCtx.SaveChangesAsync();
             }
             catch (System.Data.RowNotInTableException)
             {
@@ -91,9 +96,11 @@ namespace MLDB.Api.Controllers
             
             var surveyToCreate = surveyDTO with { SiteId = siteId };
             
-            var survey = _mapper.Map<Survey>(surveyDTO);
+            var survey = _mapper.Map<Survey>(surveyToCreate);
 
             var newSurvey = await _surveyRepo.insertAsync(survey);
+
+            await _dbCtx.SaveChangesAsync();
 
             return CreatedAtAction("GetSurvey", new { siteId = newSurvey.SiteId, id = newSurvey.Id }, _mapper.Map<SurveyDTO>(newSurvey));
         }

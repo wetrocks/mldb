@@ -129,7 +129,7 @@ namespace MLDB.Api.IntegrationTests
             
             var body = await result.Content.ReadAsStringAsync();
             JToken.Parse(body).Should().ContainSubtree(
-                String.Format("{{ 'name' : '{0}' , 'createUserId' : '{1}'}}", testDTO.Name, testToken.sub));
+                String.Format("{{ 'name' : '{0}' }}", testDTO.Name));
         }
 
         [Test]
