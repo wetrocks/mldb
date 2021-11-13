@@ -1,7 +1,7 @@
 [
   {
     "Id": "1.0",
-    "Description": "Initial template",
+    "Description": "Initial litter types",
     "LitterTypes": [
       { "Id": 42, "OsparID": 1, "DadID": 1, "Description": "Bags" },
       { "Id": 43, "OsparID": 2, "DadID": 2, "Description": "Caps/Lids" },
