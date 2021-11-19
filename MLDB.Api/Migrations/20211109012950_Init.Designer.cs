@@ -3,55 +3,20 @@ using System;
 using MLDB.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MLDB.Api.Migrations
 {
     [DbContext(typeof(SiteSurveyContext))]
-    partial class SiteSurveyContextModelSnapshot : ModelSnapshot
+    [Migration("20211109012950_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.11");
-
-            modelBuilder.Entity("LitterTypeLitterTypesList", b =>
-                {
-                    b.Property<int>("LitterTypesId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("LitterTypesListId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("LitterTypesId", "LitterTypesListId");
-
-                    b.HasIndex("LitterTypesListId");
-
-                    b.ToTable("LitterTypeLitterTypesList");
-
-                    b.HasData(
-                        new
-                        {
-                            LitterTypesId = 42,
-                            LitterTypesListId = "1.0"
-                        },
-                        new
-                        {
-                            LitterTypesId = 43,
-                            LitterTypesListId = "1.0"
-                        },
-                        new
-                        {
-                            LitterTypesId = 44,
-                            LitterTypesListId = "1.0"
-                        },
-                        new
-                        {
-                            LitterTypesId = 45,
-                            LitterTypesListId = "1.0"
-                        });
-                });
 
             modelBuilder.Entity("LitterTypeSurveyTemplate", b =>
                 {
@@ -85,37 +50,7 @@ namespace MLDB.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("LitterTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 42,
-                            DadId = "1",
-                            Description = "Bags",
-                            OsparId = 1
-                        },
-                        new
-                        {
-                            Id = 43,
-                            DadId = "2",
-                            Description = "Caps/Lids",
-                            OsparId = 2
-                        },
-                        new
-                        {
-                            Id = 44,
-                            DadId = "3",
-                            Description = "Bottle",
-                            OsparId = 3
-                        },
-                        new
-                        {
-                            Id = 45,
-                            DadId = "4",
-                            Description = "Styrofoam",
-                            OsparId = 4
-                        });
+                    b.ToTable("LitterType");
                 });
 
             modelBuilder.Entity("MLDB.Domain.Site", b =>
@@ -186,41 +121,6 @@ namespace MLDB.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SurveyTemplates");
-                });
-
-            modelBuilder.Entity("MLDB.Infrastructure.Repositories.DataLoad.LitterTypesList", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LitterTypesList");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "1.0",
-                            Description = "Initial litter types"
-                        });
-                });
-
-            modelBuilder.Entity("LitterTypeLitterTypesList", b =>
-                {
-                    b.HasOne("MLDB.Domain.LitterType", null)
-                        .WithMany()
-                        .HasForeignKey("LitterTypesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MLDB.Infrastructure.Repositories.DataLoad.LitterTypesList", null)
-                        .WithMany()
-                        .HasForeignKey("LitterTypesListId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("LitterTypeSurveyTemplate", b =>

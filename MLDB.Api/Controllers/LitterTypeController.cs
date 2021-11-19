@@ -11,6 +11,8 @@ using MLDB.Api.Services;
 using AutoMapper;
 using MLDB.Api.DTO;
 using Microsoft.AspNetCore.Authorization;
+using MLDB.Infrastructure.Repositories;
+using MLDB.Domain;
 
 namespace MLDB.Api.Controllers
 {
@@ -18,21 +20,20 @@ namespace MLDB.Api.Controllers
     [ApiController]
     public class LitterTypeController : ControllerBase
     {
-        public LitterTypeController()
+        private readonly SiteSurveyContext _dbCtx;
+        
+        public LitterTypeController(SiteSurveyContext ctx)
         {
+            _dbCtx = ctx;
         }
 
         // GET: LitterItem
-        [HttpGet("litterTypes")]
-        [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<LitterTypeDTO>>> GetLitterTypes()
+        [HttpGet()]
+        public async Task<ActionResult<IEnumerable<LitterType>>> GetLitterTypes()
         {
-            var litterTypes = new List<LitterTypeDTO>() {
-                new LitterTypeDTO { Id = 42, OsparID =  42, DadID = "17", Description="Bags"},
-                new LitterTypeDTO { Id = 43, OsparID =  43, DadID = "18", Description="Caps/Lids"}
-            };
-            
-            return await Task.Run(() => litterTypes);
+            var litterTypes =  await _dbCtx.LitterTypes.ToListAsync();
+
+            return litterTypes;
         }
     }
 }

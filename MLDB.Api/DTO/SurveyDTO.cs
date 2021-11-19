@@ -6,6 +6,8 @@ namespace MLDB.Api.DTO {
     public record SurveyDTO {
         public Guid Id{ get; init; }
 
+        public Guid SiteId{ get; init; }
+
         public string SurveyDate{ get; init; }
 
         public string StartTime{ get; init; }

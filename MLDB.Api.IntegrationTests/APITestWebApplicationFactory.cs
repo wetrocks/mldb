@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System;
+using MLDB.Infrastructure.Repositories;
 
 namespace MLDB.Api.IntegrationTests
 {
@@ -27,11 +28,11 @@ namespace MLDB.Api.IntegrationTests
                 .ConfigureTestServices(services =>
                 {
                     // remove the existing context configuration
-                    var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<MLDB.Api.Models.SiteSurveyContext>));
+                    var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<SiteSurveyContext>));
                     if (descriptor != null)
                         services.Remove(descriptor);
 
-                    services.AddDbContext<MLDB.Api.Models.SiteSurveyContext>(opt => {
+                    services.AddDbContext<SiteSurveyContext>(opt => {
                             opt.UseSqlite(_conn);
                     });
                    

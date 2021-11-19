@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofixture" Version="4.17.0" />
     <PackageReference Include="AutoFixture.Nunit3" Version="4.17.0" />
     <PackageReference Include="Autofixture.SeedExtensions" Version="4.17.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
@@ -21,7 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MLDB.Api\MLDB.Api.csproj" />
+    <ProjectReference Include="..\MLDB.Domain\MLDB.Domain.csproj" />
+    <ProjectReference Include="..\MLDB.Infrastructure.Repositories\MLDB.Infrastructure.Repositories.csproj" />
   </ItemGroup>
 
 </Project>

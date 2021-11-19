@@ -13,15 +13,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
-using MLDB.Api.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MLDB.Api.Services;
 using FluentValidation.AspNetCore;
-using MLDB.Api.Repositories;
 using Serilog;
+using MLDB.Infrastructure.Repositories;
+using MLDB.Domain;
 
 namespace MLDB.Api
 {
@@ -75,7 +75,7 @@ namespace MLDB.Api
                     });
 
             services.AddDbContext<SiteSurveyContext>(opt =>
-               opt.UseSqlite(Configuration.GetConnectionString("mldbDB")));
+               opt.UseSqlite(Configuration.GetConnectionString("mldbDB"), b => b.MigrationsAssembly("MLDB.Api")));   
             
             // require authentication by default, make controller opt-out for anonymous
             services.AddControllers(options =>
@@ -93,9 +93,10 @@ namespace MLDB.Api
             });
 
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<ISiteService, SiteService>();
+            services.AddScoped<ISiteRepository, SiteRepository>();
             services.AddScoped<ISurveyRepository, SurveyRepository>();
-            services.AddScoped<ISiteSurveyService, SiteSurveyService>();
+
+
 
             services.AddAutoMapper(typeof(Startup));
 
