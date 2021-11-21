@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MLDB.Api.Models;
 using System.Security.Claims;
 using MLDB.Api.Services;
 using AutoMapper;
