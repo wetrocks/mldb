@@ -4,9 +4,7 @@ using System;
 namespace MLDB.Domain {
     public class User {
 
-        public User(String IdpId) {
-            this.IdpId = IdpId;
-        }
+        public UInt16 Id{ get; init; }
 
         public String IdpId { get; init; }
 
@@ -16,8 +14,16 @@ namespace MLDB.Domain {
         
         public Boolean EmailVerified{ get; set; }
 
-        public DateTime CreateTime { get; set; }
+        public DateTime CreateTimestamp { get; set; }
 
-        public DateTime UpdateTime { get; set; }
+        public DateTime UpdateTimestamp { get; set; }
+
+
+        public User(String IdpId) {
+            this.IdpId = IdpId;
+
+            this.CreateTimestamp = DateTime.UtcNow;
+            this.UpdateTimestamp = this.CreateTimestamp;
+        }
     }
 }
