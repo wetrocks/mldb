@@ -70,7 +70,7 @@ namespace MLDB.Api.Controllers
                 return BadRequest();
             }
 
-            var requestUser = _userSvc.createFromClaimsPrinicpal(HttpContext.User);
+            var requestUser = await _userSvc.findOrAddUserAsync(HttpContext.User);
 
             var survey = _mapper.Map<Survey>(surveyDTO);
             try
@@ -92,7 +92,7 @@ namespace MLDB.Api.Controllers
         [HttpPost()]
         public async Task<ActionResult<SurveyDTO>> PostSurvey(Guid siteId, SurveyDTO surveyDTO)
         {
-            var requestUser = _userSvc.createFromClaimsPrinicpal(HttpContext.User);
+            var requestUser = _userSvc.findOrAddUserAsync(HttpContext.User);
             
             var surveyToCreate = surveyDTO with { SiteId = siteId };
             
