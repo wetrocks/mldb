@@ -82,7 +82,7 @@ namespace MLDB.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<SiteDTO>> PostSite([FromBody] SiteDTO siteDTO)
         {
-            var requestUser = _userSvc.createFromClaimsPrinicpal(HttpContext.User);
+            var requestUser = await _userSvc.findOrAddUserAsync(HttpContext.User);
             
             var siteToCreate = siteDTO with { CreatedBy = requestUser.IdpId };
             

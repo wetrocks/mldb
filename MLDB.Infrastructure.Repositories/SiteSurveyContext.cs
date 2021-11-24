@@ -11,9 +11,9 @@ namespace MLDB.Infrastructure.Repositories
         {
         }
 
-        public DbSet<Survey> Surveys { get; set; }
+        public DbSet<User> Users { get;  set; }
 
-        // public DbSet<User> Users { get;  set; }
+        public DbSet<Survey> Surveys { get; set; }
 
         public DbSet<SurveyTemplate> SurveyTemplates{ get; set; }
 
@@ -23,6 +23,10 @@ namespace MLDB.Infrastructure.Repositories
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>()
+                        .HasIndex( x => x.IdpId )
+                        .IsUnique();
+            
             modelBuilder.Entity<SurveyTemplate>()
                         .HasMany( st => st.LitterTypes )
                         .WithMany("Surveys");

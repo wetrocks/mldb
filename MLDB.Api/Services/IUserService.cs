@@ -1,19 +1,14 @@
-using MLDB.Api.Models;
+using MLDB.Domain;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 
 namespace MLDB.Api.Services
 {
     public interface IUserService {
 
-        public const string EMAIL_CLAIMTYPE =  "https://mldb/claims/email";
-        public const string EMAIL_VERIFIED_CLAIMTYPE =  "https://mldb/claims/email_verified";
-        public const string NAME_CLAIMTYPE =  "https://mldb/claims/name";
-
         public User createFromClaimsPrinicpal(ClaimsPrincipal principal);
 
-        // public User findUser(ClaimsPrincipal principal);
-
-        // public User findOrAddUser(ClaimsPrincipal principal);
+        public Task<User> findOrAddUserAsync(ClaimsPrincipal principal);
     }
 }

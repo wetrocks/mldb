@@ -53,7 +53,7 @@ namespace MLDB.Api
                 // If the access token does not have a `sub` claim, `User.Identity.Name` will be `null`. Map it to a different claim by setting the NameClaimType below.
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    NameClaimType = ClaimTypes.NameIdentifier
+                    NameClaimType = Jwt.TokenClaims.NAME_CLAIMTYPE//ClaimTypes.NameIdentifier
                 };
             });
     
@@ -92,11 +92,10 @@ namespace MLDB.Api
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MLDB App API", Version = "v1" });
             });
 
-            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ISiteRepository, SiteRepository>();
             services.AddScoped<ISurveyRepository, SurveyRepository>();
-
-
+            services.AddScoped<IUserService, UserService>();
 
             services.AddAutoMapper(typeof(Startup));
 
