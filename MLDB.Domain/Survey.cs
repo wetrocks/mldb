@@ -27,12 +27,13 @@ namespace MLDB.Domain
         private  List<LitterItem> _litterItems = new List<LitterItem>();
         public IReadOnlyList<LitterItem> LitterItems =>  _litterItems;
 
-        private Survey(Guid siteId, string createUserId) {
+        public Survey(Guid siteId, string createUserId) {
             SiteId = siteId;
             CreateUserId = createUserId;
             CreateTimestamp = DateTime.UtcNow;
         }
 
+        [Obsolete]
         public Survey(Guid siteId, IList<int> litterTypes, string createUserId) : this(siteId, createUserId) {            
             if( litterTypes == null || litterTypes.Count == 0) {
                 throw new ArgumentException("Cannot create a survey without litterTypes");
@@ -41,6 +42,7 @@ namespace MLDB.Domain
             _litterItems.AddRange(litterTypes.Select( x => new LitterItem(x) ));
         }
 
+        [Obsolete]
         public Survey(Guid id, Guid siteId, IList<int> litterTypes, string createUserId) : this(siteId, litterTypes, createUserId) {            
             this.Id = id;
         }

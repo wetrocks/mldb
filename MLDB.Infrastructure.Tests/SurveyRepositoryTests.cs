@@ -66,7 +66,6 @@ namespace MLDB.Infrastructure.IntegrationTests
                 seedCtx.Add(seedSite);
 
                 seedSurvey = new Survey(seedSite.Id, 
-                                        fixture.CreateMany<int>().ToList(),
                                         fixture.Create<string>());
                 seedCtx.Add(seedSurvey);
 
@@ -110,7 +109,6 @@ namespace MLDB.Infrastructure.IntegrationTests
         public async Task insert_addsNewSurvey()
         {
             var testSurvey = new Survey(seedSite.Id, 
-                                        fixture.CreateMany<int>().ToList(),
                                         fixture.Create<string>());
 
             var created = await testRepo.insertAsync(testSurvey);
@@ -128,7 +126,6 @@ namespace MLDB.Infrastructure.IntegrationTests
         public void insert_whenSiteNotExist_throwsException()
         {
             var testSurvey = new Survey(fixture.Create<Guid>(), 
-                                        fixture.CreateMany<int>().ToList(),
                                         fixture.Create<string>());
 
             Assert.ThrowsAsync<DbUpdateException>( async () => { 
@@ -140,9 +137,10 @@ namespace MLDB.Infrastructure.IntegrationTests
         [Test]
         public async Task update_withChangeToFields_UpdatesSurvey()
         {
-            var testSurvey = new Survey(seedSurvey.Id, seedSite.Id, 
-                                        fixture.CreateMany<int>().ToList(),
-                                        fixture.Create<string>());
+            Survey  testSurvey;
+            using( var readCtx = new SiteSurveyContext(ctxOptions) ) {
+                testSurvey = readCtx.Surveys.Find(seedSurvey.Id);
+            }
             
             testSurvey.CoordinatorName = fixture.Create<string>("coordinator");
             testSurvey.StartTimeStamp = fixture.Create<DateTime>().ToUniversalTime();
@@ -155,11 +153,7 @@ namespace MLDB.Infrastructure.IntegrationTests
 
             using( var assertCtx = new SiteSurveyContext(ctxOptions) ) {
                 var testUpdated = assertCtx.Surveys.Find(seedSurvey.Id);
-                testUpdated.Should().BeEquivalentTo(testSurvey, opt => opt
-                    .Excluding( x => x.CreateUserId )
-                    .Excluding( x => x.CreateTimestamp )
-                    .Excluding( x => x.LitterItems )
-                );
+                testUpdated.Should().BeEquivalentTo(testSurvey);
            }
         }
     }
