@@ -15,8 +15,6 @@ namespace MLDB.Infrastructure.Repositories
 
         public DbSet<Survey> Surveys { get; set; }
 
-        public DbSet<SurveyTemplate> SurveyTemplates{ get; set; }
-
         public DbSet<Site> Sites { get; set; }
 
         public DbSet<LitterType> LitterTypes { get;  set; }
@@ -27,10 +25,6 @@ namespace MLDB.Infrastructure.Repositories
                         .HasIndex( x => x.IdpId )
                         .IsUnique();
             
-            modelBuilder.Entity<SurveyTemplate>()
-                        .HasMany( st => st.LitterTypes )
-                        .WithMany("Surveys");
-                        
             modelBuilder.Entity<Survey>().OwnsMany(
                 s => s.LitterItems, li => 
                 {
