@@ -9,6 +9,12 @@ namespace MLDB.Domain
         
         public string Name{ get; set; }
 
+        public string beachName{ get; set; }
+        
+        public string beachCode{ get; set; }
+
+        public string countryCode{ get; set; }
+
         public string CreateUserId{ get; init; }
 
         public  DateTime CreateTimestamp { get; init; }

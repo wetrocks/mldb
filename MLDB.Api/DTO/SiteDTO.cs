@@ -6,6 +6,9 @@ namespace MLDB.Api.DTO {
     {
         public Guid Id { get; init; }
         public string Name { get; init; }
+        public string beachName { get; init; }
+        public string beachCode { get; init; }
+        public string countryCode { get; init; }
         public string CreatedBy { get; init; }
         public List<SurveyDTO> Surveys { get; init; }
     };

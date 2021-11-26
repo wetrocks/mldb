@@ -7,11 +7,13 @@ using AutoMapper;
 using MLDB.Api.DTO;
 using MLDB.Domain;
 using MLDB.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MLDB.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    //[AllowAnonymous]
     public class SiteController : ControllerBase
     {
         private readonly IMapper _mapper;

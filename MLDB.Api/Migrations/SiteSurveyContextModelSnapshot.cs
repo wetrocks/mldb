@@ -133,6 +133,15 @@ namespace MLDB.Api.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("beachCode")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("beachName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("countryCode")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.ToTable("Sites");
