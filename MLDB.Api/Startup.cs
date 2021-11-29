@@ -96,6 +96,7 @@ namespace MLDB.Api
             services.AddScoped<ISiteRepository, SiteRepository>();
             services.AddScoped<ISurveyRepository, SurveyRepository>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ISurveyService, SurveyService>();
 
             services.AddAutoMapper(typeof(Startup));
 

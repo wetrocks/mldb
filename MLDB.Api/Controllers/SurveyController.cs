@@ -24,10 +24,14 @@ namespace MLDB.Api.Controllers
 
         private readonly SiteSurveyContext _dbCtx;
 
-        public SurveyController(IUserService userService, ISurveyRepository surveyRepo, IMapper mapper, SiteSurveyContext ctx)
+        private readonly ISurveyService _surveyService;
+
+        public SurveyController(IUserService userService, ISurveyRepository surveyRepo, IMapper mapper, SiteSurveyContext ctx,
+                                ISurveyService surveyService)
         {
             _userSvc = userService;
             _surveyRepo = surveyRepo;
+            _surveyService = surveyService;
             _mapper = mapper;
             _dbCtx = ctx;
         }
@@ -70,12 +74,9 @@ namespace MLDB.Api.Controllers
                 return BadRequest();
             }
 
-            var requestUser = await _userSvc.findOrAddUserAsync(HttpContext.User);
-
-            var survey = _mapper.Map<Survey>(surveyDTO);
             try
             {
-                await _surveyRepo.updateAsync(survey);
+                await _surveyService.updateSiteSurvey(HttpContext.User, surveyDTO);
                 await _dbCtx.SaveChangesAsync();
             }
             catch (System.Data.RowNotInTableException)
@@ -92,17 +93,11 @@ namespace MLDB.Api.Controllers
         [HttpPost()]
         public async Task<ActionResult<SurveyDTO>> PostSurvey(Guid siteId, SurveyDTO surveyDTO)
         {
-            var requestUser = _userSvc.findOrAddUserAsync(HttpContext.User);
-            
-            var surveyToCreate = surveyDTO with { SiteId = siteId };
-            
-            var survey = _mapper.Map<Survey>(surveyToCreate);
-
-            var newSurvey = await _surveyRepo.insertAsync(survey);
+            var newSurvey = await _surveyService.createSiteSurvey(HttpContext.User, siteId, surveyDTO);
 
             await _dbCtx.SaveChangesAsync();
 
-            return CreatedAtAction("GetSurvey", new { siteId = newSurvey.SiteId, id = newSurvey.Id }, _mapper.Map<SurveyDTO>(newSurvey));
+            return CreatedAtAction("GetSurvey", new { siteId = siteId, id = newSurvey.Id }, newSurvey);
         }
     }
 }
