@@ -67,9 +67,7 @@ namespace MLDB.Api.IntegrationTests
                                   .Create();
             ctx.Sites.Add(seedSite);
 
-            seedSurvey = new Survey(seedSite.Id, 
-                                    fixture.CreateMany<int>().ToList(),
-                                    fixture.Create<string>());
+            seedSurvey = new Survey(seedSite.Id, fixture.Create<string>());
             dbCtx.Surveys.Add(seedSurvey);
 
             ctx.SaveChanges();

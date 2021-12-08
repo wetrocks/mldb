@@ -52,6 +52,8 @@ namespace MLDB.Infrastructure.Repositories
             orig.VolunteerCount = survey.VolunteerCount;
             orig.TotalKg = survey.TotalKg;
 
+            orig.updateLitterItems(survey.LitterItems);
+
             var updated = _dbCtx.Surveys.Update(orig);
             return updated.Entity;
         }
