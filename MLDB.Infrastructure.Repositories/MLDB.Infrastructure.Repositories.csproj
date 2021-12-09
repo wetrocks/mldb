@@ -8,6 +8,12 @@
     <EmbeddedResource Include="SeedData/seedLitterTypes.json">
       <Link>SeedData/seedLitterTypes.json</Link>
     </EmbeddedResource>
+    <EmbeddedResource Include="SeedData/internalLitterTypes.json">
+      <Link>SeedData/internalLitterTypes.json</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SeedData/osparLitterTypes.json">
+      <Link>SeedData/osparLitterTypes.json</Link>
+    </EmbeddedResource>  
   </ItemGroup>
 
   <ItemGroup>
