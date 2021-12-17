@@ -58,7 +58,70 @@ namespace MLDB.Domain
         public string beachVisitsPerYear{ get; set; }
 
         public string beachAccess{ get; set; }
-    
+
+        public string nearestTown{ get; set; }
+        public string townPosition{ get; set; }
+
+        public string townPopulation{ get; set; }
+
+        public string behindBeachDev{ get; set; }
+
+        public string foodOnBeach{ get; set; }
+
+        public string foodDistance{ get; set; }
+
+        public string foodYearRound{ get; set; }
+
+        public string foodPosition{ get; set; }
+
+        public string nearestShippingLane{ get; set; }
+
+        public string shippingLaneDensity{ get; set; }
+
+        public string shippingLaneUse{ get; set; }
+
+        public string shippingLanePosition{ get; set; }
+
+        public string nearestHarbour{ get; set; }
+
+        public string harbourName{ get; set; }
+
+        public string harbourType{ get; set; }
+
+        public string harbourSize{ get; set; }
+
+        public string riverDistance{ get; set; }
+
+        public string riverName{ get; set; }
+
+        public string riverPosition{ get; set; }
+
+        public string nearDischarge{ get; set; }
+
+        public string dischargeDistance{ get; set; }
+
+        public string dischargePosition{ get; set; }
+
+        public string cleanedHowOften{ get; set; }
+
+        public string cleanedYearRoundOrSeasonal{ get; set; }
+
+        public string cleaningMethod{ get; set; }
+        
+        public string responsibleForCleaning{ get; set; }
+
+        public string additionalComments{ get; set; }
+
+        public string amendment{ get; set; }
+
+        public string dateCompleted{ get; set; }
+
+        public string enteredBy{ get; set; }
+
+        public string enteredByPhone{ get; set; }
+
+        public string enteredByEmail{ get; set; }
+
         public string CreateUserId{ get; init; }
 
         public  DateTime CreateTimestamp { get; init; }
