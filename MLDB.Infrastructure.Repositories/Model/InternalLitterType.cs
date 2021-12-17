@@ -18,9 +18,9 @@ namespace MLDB.Infrastructure.Repositories.Model {
         internal UInt16? SourceCategoryId { get; init; }
         public LitterSourceCategory SourceCategory { get; init; }
 
-        public LitterTypeMapping<OsparLitterType> OsparMapping { get; init; }
+        public LitterTypeMapping<UInt32, OsparLitterType> OsparMapping { get; init; }
 
-        public LitterTypeMapping<JointListLitterType> JointListMapping { get; init; }
+        public LitterTypeMapping<String, JointListLitterType> JointListMapping { get; init; }
 
         internal InternalLitterType() {}
 

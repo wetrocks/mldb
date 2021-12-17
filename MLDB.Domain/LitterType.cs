@@ -14,6 +14,8 @@ namespace MLDB.Domain
 
         public string Description { get; private set; }
 
+        public LitterSourceCategory SourceCategory { get; init; }
+
         public LitterType( int id, int osparId, string dadId, String description) {
             this.Id = id;
             this.OsparId = osparId;

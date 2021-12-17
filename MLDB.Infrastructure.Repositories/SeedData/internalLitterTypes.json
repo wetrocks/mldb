@@ -4,5 +4,8 @@
     { "Code": 2, "Description": "Caps/Lids", "Category": "SUP" },
     { "Code": 3, "Description": "Bottle", "Category": "SUP"  },
     { "Code": 4, "Description": "Styrofoam", "Category": "Fisheries" }
+  ],
+  "osparTypeMapping": [
+    { "InternalLitterTypeCode": 1, "OsparLitterTypeCode": 42 }
   ]
 }
