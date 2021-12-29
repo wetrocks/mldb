@@ -1,11 +1,25 @@
+
+using System;
 using Microsoft.EntityFrameworkCore;
 using MLDB.Domain;
-using MLDB.Infrastructure.Repositories.Configuration;
+using MLDB.Infrastructure.Repositories.Model;
+using MLDB.Infrastructure.Repositories.DataLoad;
+
 
 namespace MLDB.Infrastructure.Repositories
 {
     public class SiteSurveyContext : DbContext
     {
+        // TODO: probably inject a static instance
+        private ISeedDataLoader<LitterSourceCategory> categoryLoader = new SourceCategoryDataLoader();
+        private ISeedDataLoader<OsparLitterType> osparLoader = new OsparLitterTypeDataLoader();
+
+        private ISeedDataLoader<JointListLitterType> jlistLoader = new JointListLitterTypeDataLoader();
+
+        private ISeedDataLoader<LitterTypeMapping<UInt32, OsparLitterType>> osparMappingLoader = new OsparMappingLoader();
+
+        private ISeedDataLoader<LitterTypeMapping<String, JointListLitterType>> jlistMappingLoader = new JointListMappingLoader();
+
         public SiteSurveyContext(DbContextOptions<SiteSurveyContext> options)
             : base(options)
         {
@@ -16,8 +30,12 @@ namespace MLDB.Infrastructure.Repositories
         public DbSet<Survey> Surveys { get; set; }
 
         public DbSet<Site> Sites { get; set; }
+        
+        internal DbSet<InternalLitterType> InternalLitterTypes { get; set; }
 
-        public DbSet<LitterType> LitterTypes { get;  set; }
+        internal DbSet<OsparLitterType> OsparLitterTypes { get; set; }
+
+        internal DbSet<JointListLitterType> JointListLitterTypes{ get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -37,12 +55,88 @@ namespace MLDB.Infrastructure.Repositories
                         .WithMany()
                         .HasForeignKey( x => x.SiteId );
 
-            // read lists of litter types
-            var litterTypesLists = DataLoad.ReferenceDataLoader.readLitterTypes();
+
+            // configure litter type vocabs, etc
+            this.CreateLitterTypesModel(modelBuilder);
+        }
+
+        private void CreateLitterTypesModel(ModelBuilder modelBuilder) {
+            var categories = this.categoryLoader.readSeedData();
+
+            // TODO: need to not create this here, and maybe make additional data a function param
+            var internalLTLoader = new InternalLitterTypeDataLoader(categories);
+
+            modelBuilder.Entity<LitterSourceCategory>()
+                        .HasData(categories);
+
+
+            modelBuilder.Entity<InternalLitterType>()
+                        .HasKey( x => x.Code );
+
+            modelBuilder.Entity<InternalLitterType>()
+                        .HasOne( x => x.SourceCategory )
+                        .WithMany()
+                        .HasForeignKey( x => x.SourceCategoryId );
+
+            modelBuilder.Entity<InternalLitterType>()
+                        .HasData(internalLTLoader.readSeedData());
+        
+            modelBuilder.Entity<InternalLitterType>()
+                        .HasOne( x => x.OsparMapping )
+                        .WithOne()
+                        .HasForeignKey<LitterTypeMapping<UInt32, OsparLitterType>>( x => x.InternalLitterTypeCode );
+
+            modelBuilder.Entity<InternalLitterType>()
+                        .HasOne( x => x.JointListMapping )
+                        .WithOne()
+                        .HasForeignKey<LitterTypeMapping<String, JointListLitterType>>( x => x.InternalLitterTypeCode );
+
+            // OSPAR litter type
+            modelBuilder.Entity<OsparLitterType>()
+                        .HasKey( x => x.Code );
+            modelBuilder.Entity<OsparLitterType>()
+                        .HasData(osparLoader.readSeedData());
+
+            // OSPAR type mapping
+            modelBuilder.Entity<LitterTypeMapping<UInt32, OsparLitterType>>()
+                        .HasData(osparMappingLoader.readSeedData());
+
+            modelBuilder.Entity<LitterTypeMapping<UInt32, OsparLitterType>>()
+                        .ToTable("LitterTypeMapping_Ospar")
+                        .HasKey( m => m.InternalLitterTypeCode );
             
-            var litterTypeConfigs =  new LitterTypeEntityConfigurations(litterTypesLists);
-            litterTypeConfigs.Configure(modelBuilder.Entity<LitterType>());
-            litterTypeConfigs.Configure(modelBuilder.Entity<DataLoad.LitterTypesList>());
+            modelBuilder.Entity<LitterTypeMapping<UInt32, OsparLitterType>>()
+                        .HasOne( x => x.MappedType)
+                        .WithMany()
+                        .HasForeignKey( x => x.MappedTypeKey );
+
+            // JList litter type
+            modelBuilder.Entity<JointListLitterType>()
+                        .HasKey( x => x.TypeCode );
+            
+            modelBuilder.Entity<JointListLitterType>()
+                        .Property( x => x.J_Code )
+                        .IsRequired();
+
+            modelBuilder.Entity<JointListLitterType>()
+                        .HasData(jlistLoader.readSeedData());
+
+            // JList type mapping
+            modelBuilder.Entity<LitterTypeMapping<String, JointListLitterType>>()
+                        .ToTable("LitterTypeMapping_JointList")
+                        .HasKey( m => m.InternalLitterTypeCode );
+
+            modelBuilder.Entity<LitterTypeMapping<String, JointListLitterType>>()
+                        .Property( x => x.MappedTypeKey)
+                        .IsRequired();
+
+            modelBuilder.Entity<LitterTypeMapping<String, JointListLitterType>>()
+                        .HasOne( x => x.MappedType )
+                        .WithMany()
+                        .HasForeignKey( x => x.MappedTypeKey );
+
+            modelBuilder.Entity<LitterTypeMapping<String, JointListLitterType>>()
+                        .HasData(jlistMappingLoader.readSeedData());
         }
     }
 }
