@@ -71,7 +71,7 @@ namespace MLDB.Infrastructure.IntegrationTests
         {
             var litterType = await testRepo.findAsync(1);
 
-            // TODO: get values from reference data json
+            // TODO: get values from reference data json or preload
             litterType.Id.Should().Be(1);
             litterType.Description.Should().Be("Bags");
             litterType.SourceCategory.Should().BeEquivalentTo(new LitterSourceCategory(1, "SUP", "Stand up paddleboards"));

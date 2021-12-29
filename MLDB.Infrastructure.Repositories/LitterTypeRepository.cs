@@ -22,6 +22,8 @@ namespace MLDB.Infrastructure.Repositories
                                             .Include( x => x.SourceCategory)
                                             .Include( x => x.OsparMapping)
                                             .ThenInclude( m => m.MappedType)
+                                            .Include( x => x.JointListMapping)
+                                            .ThenInclude( m => m.MappedType )
                                             .AsNoTracking()
                                             .ToListAsync();
 
@@ -35,6 +37,8 @@ namespace MLDB.Infrastructure.Repositories
                                             .Include( x => x.SourceCategory)
                                             .Include( x => x.OsparMapping)
                                             .ThenInclude( m => m.MappedType)
+                                            .Include( x => x.JointListMapping)
+                                            .ThenInclude( m => m.MappedType )
                                             .AsNoTracking()
                                             .SingleOrDefaultAsync( x => x.Code == id);
             if( internalType == null )
@@ -45,11 +49,15 @@ namespace MLDB.Infrastructure.Repositories
 
         private LitterType InternalToLitterType(Model.InternalLitterType internalType)
         {
-            return new LitterType { Id = internalType.Code, 
-                                    Description = internalType.Description,
-                                    SourceCategory = internalType.SourceCategory,
-                                    OsparId = internalType.OsparMapping?.MappedType?.Code,
-                                    OsparCategory = internalType.OsparMapping?.MappedType?.Category};
+            return new LitterType { 
+                Id = internalType.Code, 
+                Description = internalType.Description,
+                SourceCategory = internalType.SourceCategory,
+                OsparId = internalType.OsparMapping?.MappedType?.Code,
+                OsparCategory = internalType.OsparMapping?.MappedType?.Category,
+                JointListTypeCode = internalType.JointListMapping?.MappedType?.TypeCode,
+                JointListJCode = internalType.JointListMapping?.MappedType?.J_Code
+            };
         }
     }
 }

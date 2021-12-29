@@ -15,5 +15,9 @@ namespace MLDB.Domain
         public string Description { get; init; }
 
         public LitterSourceCategory SourceCategory { get; init; }
+
+        public String JointListTypeCode { get; init; }
+
+        public String JointListJCode { get; init; }
     }
 }

@@ -95,6 +95,7 @@ namespace MLDB.Api
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ISiteRepository, SiteRepository>();
             services.AddScoped<ISurveyRepository, SurveyRepository>();
+            services.AddScoped<ILitterTypeRepository,  LitterTypeRepository>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ISurveyService, SurveyService>();
 
