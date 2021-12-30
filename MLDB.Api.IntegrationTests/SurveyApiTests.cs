@@ -56,12 +56,6 @@ namespace MLDB.Api.IntegrationTests
             seedTestData(dbCtx);
         }
 
-        [TearDown]
-        public void tearDown()
-        {
-            dbCtx.Sites.Remove(seedSite);
-        }
-
         private void seedTestData(SiteSurveyContext ctx) {
             seedSite = fixture.Build<Site>()
                                   .Create();

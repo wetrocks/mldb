@@ -1,0 +1,6 @@
+[
+    { "Code": 42, "Description": "Ospar Bags", "Category": "Plastic" },
+    { "Code": 43, "Description": "Ospar Caps/Lids", "Category": "Metal" },
+    { "Code": 44, "Description": "Ospar Bottle", "Category": "Glass"  },
+    { "Code": 45, "Description": "Ospar Styrofoam", "Category": "Polystyrene" } 
+]
