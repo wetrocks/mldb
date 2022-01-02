@@ -37,13 +37,17 @@ namespace MLDB.Api.DTO {
 
         public string townPopulation{ get; set; }
 
-        public string behindBeachDev{ get; set; }
+        public string developmentBehindBeach{ get; set; }
+
+        public string developmentBehindBeachDesc{ get; set; }
 
         public string foodOnBeach{ get; set; }
 
         public string foodDistance{ get; set; }
 
         public string foodYearRound{ get; set; }
+
+        public string foodMonths{ get; set; }
 
         public string foodPosition{ get; set; }
 
@@ -63,6 +67,8 @@ namespace MLDB.Api.DTO {
 
         public string harbourSize{ get; set; }
 
+        public string harbourPosition{ get; set; }
+
         public string riverDistance{ get; set; }
 
         public string riverName{ get; set; }
@@ -76,6 +82,10 @@ namespace MLDB.Api.DTO {
         public string dischargePosition{ get; set; }
 
         public string cleanedHowOften{ get; set; }
+
+        public string cleanedMonths{ get; set; }
+
+        public string cleanedOther{ get; set; }
 
         public string cleanedYearRoundOrSeasonal{ get; set; }
 
