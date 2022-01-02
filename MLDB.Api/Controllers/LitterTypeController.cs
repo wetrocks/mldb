@@ -19,18 +19,18 @@ namespace MLDB.Api.Controllers
     [ApiController]
     public class LitterTypeController : ControllerBase
     {
-        private readonly SiteSurveyContext _dbCtx;
-        
-        public LitterTypeController(SiteSurveyContext ctx)
+        private readonly ILitterTypeRepository _litterTypeRepo;
+
+        public LitterTypeController(ILitterTypeRepository litterTypeRepository)
         {
-            _dbCtx = ctx;
+            _litterTypeRepo = litterTypeRepository;
         }
 
-        // GET: LitterItem
+        // GET: LitterType
         [HttpGet()]
-        public async Task<ActionResult<IEnumerable<LitterType>>> GetLitterTypes()
+        public async Task<ActionResult<List<LitterType>>> GetLitterTypes()
         {
-            var litterTypes =  await _dbCtx.LitterTypes.ToListAsync();
+            var litterTypes =  await _litterTypeRepo.getAll();
 
             return litterTypes;
         }

@@ -60,14 +60,14 @@ namespace MLDB.Api.IntegrationTests
         [Test]
         public async Task GetLitterTypes_ReturnsLitterTypes()
         {
-            var litterType = dbCtx.LitterTypes.FirstOrDefault();
-
             client.SetFakeBearerToken((object)testToken);
 
             var response = await client.GetAsync("/litterType");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var body = await response.Content.ReadAsStringAsync();
-            JToken.Parse(body).Should().ContainSubtree(String.Format("[{{ 'id' : {0} }}]", litterType.Id));
+
+            // TODO: get id from db or json
+            JToken.Parse(body).Should().ContainSubtree(String.Format("[{{ 'id' : {0} }}]", 1));
         }
     }
 }

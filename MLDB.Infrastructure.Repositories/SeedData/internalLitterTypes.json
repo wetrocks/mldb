@@ -1,0 +1,14 @@
+{
+  "internalLitterTypes": [
+    { "Code": 1, "Description": "Bags", "Category": "SUP" },
+    { "Code": 2, "Description": "Caps/Lids", "Category": "SUP" },
+    { "Code": 3, "Description": "Bottle", "Category": "SUP"  },
+    { "Code": 4, "Description": "Styrofoam", "Category": "Fisheries" }
+  ],
+  "osparTypeMapping": [
+    { "InternalLitterTypeCode": 1, "OsparLitterTypeCode": 42 }
+  ],
+  "jlistTypeMapping": [
+    { "InternalLitterTypeCode": 1, "JListLitterTypeCode": "pl_nn_bag_cabg_" }
+  ]
+}

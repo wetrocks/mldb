@@ -24,30 +24,31 @@ namespace MLDB.Domain
 
         public Decimal TotalKg{ get; set; }
 
-        private  List<LitterItem> _litterItems = new List<LitterItem>();
-        public IReadOnlyList<LitterItem> LitterItems =>  _litterItems;
+        private HashSet<LitterItem> _litterItems = new HashSet<LitterItem>();
+        public IReadOnlySet<LitterItem> LitterItems => _litterItems;
 
-        private Survey(Guid siteId, string createUserId) {
+        public Survey(Guid siteId, string createUserId) {
             SiteId = siteId;
             CreateUserId = createUserId;
             CreateTimestamp = DateTime.UtcNow;
         }
 
-        public Survey(Guid siteId, IList<int> litterTypes, string createUserId) : this(siteId, createUserId) {            
-            if( litterTypes == null || litterTypes.Count == 0) {
-                throw new ArgumentException("Cannot create a survey without litterTypes");
+        public Survey(Guid siteId, Guid surveyId, string createUserId) : this(siteId, createUserId) {
+            Id = surveyId;
+        }
+
+        public void updateLitterItems(IEnumerable<LitterItem> litterItems) {
+            var itemSet = litterItems.ToHashSet();
+
+            var dups = itemSet.GroupBy( x => x.LitterTypeId )
+                             .Where( g => g.Count() > 1)
+                             .Select( g => g.Key );
+
+            if( dups.Count() > 0) {
+                throw new ArgumentException($"Parameter contained duplicate litter type ids {String.Join(",", dups)}");
             }
-        
-            _litterItems.AddRange(litterTypes.Select( x => new LitterItem(x) ));
-        }
 
-        public Survey(Guid id, Guid siteId, IList<int> litterTypes, string createUserId) : this(siteId, litterTypes, createUserId) {            
-            this.Id = id;
-        }
-
-        public void updateLitterCount(int litterTypeId, int count) {
-            var litterItem = _litterItems.Single( x => x.LitterTypeId == litterTypeId );
-            litterItem.Count = count;
+            _litterItems = litterItems.ToHashSet();
         }
     }
 }

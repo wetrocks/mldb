@@ -56,20 +56,12 @@ namespace MLDB.Api.IntegrationTests
             seedTestData(dbCtx);
         }
 
-        [TearDown]
-        public void tearDown()
-        {
-            dbCtx.Sites.Remove(seedSite);
-        }
-
         private void seedTestData(SiteSurveyContext ctx) {
             seedSite = fixture.Build<Site>()
                                   .Create();
             ctx.Sites.Add(seedSite);
 
-            seedSurvey = new Survey(seedSite.Id, 
-                                    fixture.CreateMany<int>().ToList(),
-                                    fixture.Create<string>());
+            seedSurvey = new Survey(seedSite.Id, fixture.Create<string>());
             dbCtx.Surveys.Add(seedSurvey);
 
             ctx.SaveChanges();

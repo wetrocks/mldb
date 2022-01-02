@@ -88,7 +88,7 @@ namespace MLDB.Infrastructure.IntegrationTests
         }
 
         [Test]
-        public async Task findByIdpId__WhenExists_ReturnsUser()
+        public async Task findByIdpId_WhenExists_ReturnsUser()
         {
             var testUser = await testRepo.findByIdpIdAsync(seedUser.IdpId);
 

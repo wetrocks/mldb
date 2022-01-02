@@ -3,14 +3,16 @@ using System;
 using MLDB.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MLDB.Api.Migrations
 {
     [DbContext(typeof(SiteSurveyContext))]
-    partial class SiteSurveyContextModelSnapshot : ModelSnapshot
+    [Migration("20211229153149_LitterTypes")]
+    partial class LitterTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,15 +62,6 @@ namespace MLDB.Api.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("beachCode")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("beachName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("countryCode")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

@@ -18,16 +18,6 @@ namespace MLDB.Api.Tests.MappingTests {
         private Survey testSurvey = null;
 
         private Fixture fixture = null;
-        
-        private SurveyDTO testDTO = new SurveyDTO() { 
-            Id = Guid.NewGuid(),
-            SurveyDate = "1969-04-20",
-            StartTime = "16:20:09",
-            EndTime = "18:09:42",
-            Coordinator = "Test Coordinator",
-            VolunteerCount = 17,
-            TotalKg = 21.12m
-        };
 
         [SetUp]
         public void setup() { 
@@ -37,14 +27,11 @@ namespace MLDB.Api.Tests.MappingTests {
             configuration.AssertConfigurationIsValid();
             mapper = configuration.CreateMapper();
 
-            testSurvey = new Survey(fixture.Create<Guid>(), fixture.Create<Guid>(), 
-                                    new List<int>{ 42, 43 },
-                                    fixture.Create<string>());
-            testSurvey.StartTimeStamp = new DateTime(1969,4,20,16,20,09);
-            testSurvey.EndTimeStamp = new DateTime(1969,4,20,18,09,42);
-            testSurvey.CoordinatorName = "Test Coordinator";
-            testSurvey.VolunteerCount = 17;
-            testSurvey.TotalKg = 21.12m;
+            testSurvey = fixture.Build<Survey>()
+                                .With( x => x.StartTimeStamp, new DateTime(1969,4,20,16,20,09))
+                                .With( x => x.EndTimeStamp, new DateTime(1969,4,20,18,09,42))
+                                .Create();
+            testSurvey.updateLitterItems(fixture.CreateMany<LitterItem>());               
         }
 
         [Test]
@@ -63,67 +50,16 @@ namespace MLDB.Api.Tests.MappingTests {
 
         [Test]
         public void surveyMapping_ToDTO_ShouldMapLitterItems() {
-
-            testSurvey.updateLitterCount(42, 1);
-            testSurvey.updateLitterCount(43, 3);
+            Assume.That(testSurvey.LitterItems, Is.Not.Zero);
 
             var surveyDTO  = mapper.Map<SurveyDTO>(testSurvey);
 
-            surveyDTO.LitterItems.Should().HaveCount(2);
-            surveyDTO.LitterItems.Should().Contain("42", 1);
-            surveyDTO.LitterItems.Should().Contain("43", 3);
+            surveyDTO.LitterItems.Should().HaveSameCount(testSurvey.LitterItems);
+            foreach( LitterItem item in testSurvey.LitterItems ) {
+                var dtoItemCount = surveyDTO.LitterItems[item.LitterTypeId.ToString()];
+                item.Count.Should().Be(dtoItemCount);
+            }
         }
 
-
-        [Test]
-        public void surveyMapping_FromDTO_ShouldMapExpectedFields() {
-
-            var mappedSurvey = mapper.Map<Survey>(testDTO);
-
-            mappedSurvey.Id.Should().Be(testDTO.Id);
-            mappedSurvey.StartTimeStamp.Should().Be(new DateTime(1969,4,20,16,20,09));
-            mappedSurvey.EndTimeStamp.Should().Be(new DateTime(1969,4,20,18,09,42));            
-            mappedSurvey.CoordinatorName.Should().Be(testDTO.Coordinator);
-            mappedSurvey.VolunteerCount.Should().Be(testDTO.VolunteerCount);
-            mappedSurvey.TotalKg.Should().Be(testDTO.TotalKg);
-        }
-
-        [Ignore("need to fix litter items first")]
-        [Test]
-        public void surveyMapping_FromDTO_ShouldMapLitterItems() {
-            var dtoWithItems = testDTO with {
-                LitterItems = new Dictionary<String, int>() { 
-                    ["42"] = 1,
-                    ["43"] = 3
-                }
-            };
-
-            var mappedSurvey = mapper.Map<Survey>(dtoWithItems);
-
-            mappedSurvey.LitterItems.Should().HaveCount(2);
-            mappedSurvey.LitterItems.Should().Contain( x => x.LitterTypeId == 42 && x.Count == 1);
-        }
-
-        [Test]
-        public void surveyMapping_FromDTO_SetsDefaultStartTime_IfNotSet() {
-            var dtoWithNoStartTime = testDTO with {
-                StartTime = null
-            }; 
-
-            var mappedSurvey = mapper.Map<Survey>(dtoWithNoStartTime);
-
-            mappedSurvey.StartTimeStamp.Should().Be(new DateTime(1969,4,20,00,00,00));
-        }
-
-        [Test]
-        public void surveyMapping_FromDTO_SetsDefaultEndTime_IfNotSet() {
-            var dtoWithNoEndTime = testDTO with {
-                EndTime = null
-            }; 
-
-            var mappedSurvey = mapper.Map<Survey>(dtoWithNoEndTime);
-
-            mappedSurvey.EndTimeStamp.Should().Be(new DateTime(1969,4,20,00,00,00));
-        }
     }
 }

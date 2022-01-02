@@ -8,6 +8,7 @@ using FluentAssertions;
 using MLDB.Domain;
 using AutoFixture;
 using System.Linq;
+using System.Collections.Generic;
 
 
 
@@ -24,11 +25,11 @@ namespace MLDB.Infrastructure.IntegrationTests
 
         private Fixture fixture;
 
-   //     private User seedUser;
-
         private Site seedSite;
 
-        private Survey seedSurvey;
+        private Survey seedSurvey, seedSurveyWithItems;
+
+        private List<LitterItem> seedLitterItems;
 
         [SetUp]
         public void Setup()
@@ -66,9 +67,15 @@ namespace MLDB.Infrastructure.IntegrationTests
                 seedCtx.Add(seedSite);
 
                 seedSurvey = new Survey(seedSite.Id, 
-                                        fixture.CreateMany<int>().ToList(),
                                         fixture.Create<string>());
                 seedCtx.Add(seedSurvey);
+
+                seedLitterItems = fixture.CreateMany<LitterItem>().ToList();
+                seedSurveyWithItems = fixture.Build<Survey>()
+                                            .With( x => x.SiteId, seedSite.Id)
+                                            .Create();
+                seedSurveyWithItems.updateLitterItems(seedLitterItems);
+                seedCtx.Add(seedSurveyWithItems);
 
                 seedCtx.SaveChanges();
             };
@@ -98,19 +105,35 @@ namespace MLDB.Infrastructure.IntegrationTests
             testSurveys.Should().BeNull();
         }
 
+        
+        public async Task findSurvey_whenExists_ReturnsSurvey()
+        {
+            var testSurvey = await testRepo.findAsync(seedSurveyWithItems.Id);
+
+            testSurvey.Should().BeEquivalentTo( seedSurveyWithItems );
+        }
+
         [Test]
         public async Task getSurveysForSite_whenNotExists_ReturnsEmpty()
         {
+            var testSurveys = await testRepo.getSurveysForSite(fixture.Create<Guid>());
+
+            testSurveys.Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task getSurveysForSite_whenExists_ReturnsSurveys()
+        {
             var testSurveys = await testRepo.getSurveysForSite(seedSite.Id);
 
-            testSurveys.Should().OnlyContain( x => x.Id == seedSurvey.Id );
+            testSurveys.Should().HaveCount(2);
+            testSurveys.Should().OnlyContain( x => x.Id == seedSurvey.Id || x.Id == seedSurveyWithItems.Id);
         }
 
         [Test]
         public async Task insert_addsNewSurvey()
         {
             var testSurvey = new Survey(seedSite.Id, 
-                                        fixture.CreateMany<int>().ToList(),
                                         fixture.Create<string>());
 
             var created = await testRepo.insertAsync(testSurvey);
@@ -128,7 +151,6 @@ namespace MLDB.Infrastructure.IntegrationTests
         public void insert_whenSiteNotExist_throwsException()
         {
             var testSurvey = new Survey(fixture.Create<Guid>(), 
-                                        fixture.CreateMany<int>().ToList(),
                                         fixture.Create<string>());
 
             Assert.ThrowsAsync<DbUpdateException>( async () => { 
@@ -140,9 +162,10 @@ namespace MLDB.Infrastructure.IntegrationTests
         [Test]
         public async Task update_withChangeToFields_UpdatesSurvey()
         {
-            var testSurvey = new Survey(seedSurvey.Id, seedSite.Id, 
-                                        fixture.CreateMany<int>().ToList(),
-                                        fixture.Create<string>());
+            Survey  testSurvey;
+            using( var readCtx = new SiteSurveyContext(ctxOptions) ) {
+                testSurvey = readCtx.Surveys.Find(seedSurvey.Id);
+            }
             
             testSurvey.CoordinatorName = fixture.Create<string>("coordinator");
             testSurvey.StartTimeStamp = fixture.Create<DateTime>().ToUniversalTime();
@@ -155,11 +178,68 @@ namespace MLDB.Infrastructure.IntegrationTests
 
             using( var assertCtx = new SiteSurveyContext(ctxOptions) ) {
                 var testUpdated = assertCtx.Surveys.Find(seedSurvey.Id);
-                testUpdated.Should().BeEquivalentTo(testSurvey, opt => opt
-                    .Excluding( x => x.CreateUserId )
-                    .Excluding( x => x.CreateTimestamp )
-                    .Excluding( x => x.LitterItems )
-                );
+                testUpdated.Should().BeEquivalentTo(testSurvey);
+           }
+        }
+
+        [Test]
+        public async Task update_withNewLitterItems_AddsThemToSurvey()
+        {
+            Survey  testSurvey;
+            using( var readCtx = new SiteSurveyContext(ctxOptions) ) {
+                testSurvey = readCtx.Surveys.Find(seedSurvey.Id);
+            }
+            var testItems = seedLitterItems;
+            
+            testSurvey.updateLitterItems(testItems);
+
+            var updated = await testRepo.updateAsync(testSurvey);
+            testCtx.SaveChanges();
+
+            using( var assertCtx = new SiteSurveyContext(ctxOptions) ) {
+                var testUpdated = assertCtx.Surveys.Find(seedSurvey.Id);
+                testUpdated.LitterItems.Should().HaveSameCount(testItems);
+                testUpdated.LitterItems.Should().Contain(testItems);
+           }
+        }
+
+        [Test]
+        public async Task update_withRemovedLitterItems_RemovesThemFromSurvey()
+        {
+            Survey  testSurvey;
+            using( var readCtx = new SiteSurveyContext(ctxOptions) ) {
+                testSurvey = readCtx.Surveys.Find(seedSurveyWithItems.Id);
+            }
+            var testItems = seedLitterItems.GetRange(0,1);
+            
+            testSurvey.updateLitterItems(testItems);
+
+            var updated = await testRepo.updateAsync(testSurvey);
+            testCtx.SaveChanges();
+
+            using( var assertCtx = new SiteSurveyContext(ctxOptions) ) {
+                var testUpdated = assertCtx.Surveys.Find(seedSurveyWithItems.Id);
+                testUpdated.LitterItems.Should().HaveSameCount(testItems);
+                testUpdated.LitterItems.Should().Contain(testItems);
+           }
+        }
+
+        [Test]
+        public async Task update_withChangedLitterItems_UpdatesSurvey()
+        {
+            Survey  testSurvey;
+            using( var readCtx = new SiteSurveyContext(ctxOptions) ) {
+                testSurvey = readCtx.Surveys.Find(seedSurveyWithItems.Id);
+            }
+            var updateItem = testSurvey.LitterItems.First();
+            updateItem.Count = fixture.Create<int>();
+
+            var updated = await testRepo.updateAsync(testSurvey);
+            testCtx.SaveChanges();
+
+            using( var assertCtx = new SiteSurveyContext(ctxOptions) ) {
+                var testUpdated = assertCtx.Surveys.Find(testSurvey.Id);
+                testUpdated.LitterItems.Should().Contain( x => x.LitterTypeId == updateItem.LitterTypeId && x.Count == updateItem.Count);
            }
         }
     }
