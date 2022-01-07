@@ -117,19 +117,21 @@ namespace MLDB.Api.IntegrationTests
 
         [Test]
         public async Task PostSite_CreatesSiteAndReturnsJson()
-        {
-            var testDTO = fixture.Build<SiteDTO>()
-                                 .Without( x => x.Id ).Create();
-            
+        {   
+            var testJSON = 
+            @"{
+                ""name"": ""foo""
+            }";
+
             client.SetFakeBearerToken((object)testToken);
 
-            var result = await client.PostAsJsonAsync($"/site", testDTO);
-
-            Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+            var result = await client.PostAsync($"/site", 
+                new StringContent(testJSON, Encoding.UTF8, "application/json"));
             
             var body = await result.Content.ReadAsStringAsync();
             JToken.Parse(body).Should().ContainSubtree(
-                String.Format("{{ 'name' : '{0}' }}", testDTO.Name));
+                String.Format(@"{{ ""name"" : ""{0}"" }}", "foo"));
+            Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
         }
 
         [Test]
