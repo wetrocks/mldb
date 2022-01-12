@@ -12,6 +12,7 @@ using MLDB.Api.DTO;
 using Microsoft.AspNetCore.Authorization;
 using MLDB.Infrastructure.Repositories;
 using MLDB.Domain;
+using MLDB.Api.Mapping;
 
 namespace MLDB.Api.Controllers
 {
@@ -20,19 +21,21 @@ namespace MLDB.Api.Controllers
     public class LitterTypeController : ControllerBase
     {
         private readonly ILitterTypeRepository _litterTypeRepo;
+        private readonly IMapper _mapper;
 
-        public LitterTypeController(ILitterTypeRepository litterTypeRepository)
+        public LitterTypeController(ILitterTypeRepository litterTypeRepository, IMapper mapper)
         {
             _litterTypeRepo = litterTypeRepository;
+            _mapper = mapper;
         }
 
         // GET: LitterType
         [HttpGet()]
-        public async Task<ActionResult<List<LitterType>>> GetLitterTypes()
+        public async Task<ActionResult<List<LitterTypeDTO>>> GetLitterTypes()
         {
             var litterTypes =  await _litterTypeRepo.getAll();
 
-            return litterTypes;
+            return _mapper.Map<List<LitterType>, List<LitterTypeDTO>>(litterTypes);
         }
     }
 }
