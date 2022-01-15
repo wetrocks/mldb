@@ -77,6 +77,8 @@ namespace MLDB.Infrastructure.IntegrationTests
             litterType.SourceCategory.Should().BeEquivalentTo(new LitterSourceCategory(1, "SUP", "Stand up paddleboards"));
             litterType.OsparId.Should().Be(42);
             litterType.OsparCategory.Should().Be("Plastic");
+            litterType.JointListTypeCode.Should().Be("pl_nn_bag_cabg_");
+            litterType.JointListJCode.Should().Be("J3");
         }
     }
 }
