@@ -37,15 +37,15 @@ namespace MLDB.Api.DTO {
 
         public string townPopulation{ get; set; }
 
-        //public string developmentBehindBeach{ get; set; }
+        public Boolean developmentBehindBeach{ get; set; }
 
         public string developmentBehindBeachDesc{ get; set; }
 
-        //public string foodOnBeach{ get; set; }
+        public Boolean foodOnBeach{ get; set; }
 
         public string foodDistance{ get; set; }
 
-        //public string foodYearRound{ get; set; }
+        public Boolean foodYearRound{ get; set; }
 
         public string foodMonths{ get; set; }
 
@@ -87,7 +87,7 @@ namespace MLDB.Api.DTO {
 
         public string cleanedOther{ get; set; }
 
-        // public string cleanedYearRoundOrSeasonal{ get; set; }
+        // public Boolean cleanedYearRoundOrSeasonal{ get; set; }
 
         public string cleaningMethod{ get; set; }
         
@@ -106,6 +106,7 @@ namespace MLDB.Api.DTO {
         public string enteredByEmail{ get; set; }
 
         public string CreatedBy { get; init; }
-        //  public List<SurveyDTO> Surveys { get; init; }
+
+        public List<SurveyDTO> Surveys { get; init; }
     };
 }
