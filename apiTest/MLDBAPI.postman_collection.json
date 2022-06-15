@@ -1,0 +1,263 @@
+{
+	"info": {
+		"_postman_id": "9171eee3-6d9e-43d6-8afc-770f5fd7deba",
+		"name": "MLDB API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Litter Types",
+			"item": [
+				{
+					"name": "Get Litter Types",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var litterTypeSchema = {",
+									"    \"type\": \"array\",",
+									"    \"items\": {",
+									"        \"type\": \"object\"",
+									"    }",
+									"};",
+									"",
+									"pm.test('Schema is valid', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(tv4.validate(jsonData, litterTypeSchema)).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_BASE_URL}}/LitterType",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"LitterType"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Litter Types w/ no auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_BASE_URL}}/LitterType",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"LitterType"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sites",
+			"item": [
+				{
+					"name": "Get Sites w/ no auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_BASE_URL}}/site",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"site"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Sites",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var siteSchema = {",
+									"    \"tite\": \"Sites\",",
+									"    \"type\": \"array\",",
+									"    \"items\": {",
+									"        \"type\": \"object\",",
+									"        \"required\": [ \"id\", \"name\" ],",
+									"        \"properties\": {",
+									"            \"id\": { \"type\" : \"string\" },",
+									"            \"name\" : { \"type\" : \"string\" }",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"pm.test('Schema is valid', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(tv4.validate(jsonData, siteSchema)).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_BASE_URL}}/site",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"site"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"const tokenUrl = pm.environment.get('TOKEN_URL');",
+					"//'http://mock-oauth2-server:8080/testTokenIssuer/token'; /",
+					"console.log(tokenUrl);",
+					"const grantType = 'client_credentials';",
+					"const scope = 'apitest';",
+					"const client_id = 'foo';",
+					"const client_secret = 'bar';",
+					"",
+					"const accessTokenVar = 'accessToken';",
+					"const accessTokenExpirationVar = 'accessTokenExpiry';",
+					"",
+					"// setup POST request for new token",
+					"const echoPostRequest = {",
+					"  url: tokenUrl,",
+					"  method: 'POST',",
+					"  header: 'Content-Type:application/x-www-form-urlencoded',",
+					"  body: `grant_type=${grantType}&scope=${scope}&client_id=${client_id}&client_secret=${client_secret}`",
+					"};",
+					"",
+					"const accessToken = pm.collectionVariables.get(accessTokenVar);",
+					"const tokenExpiration = pm.collectionVariables.get(accessTokenExpirationVar);",
+					"",
+					"if (accessToken && tokenExpiration && (tokenExpiration >= Date.now())) {",
+					"   console.log('Using existing token');",
+					"} else {",
+					"    // get new token and set vars",
+					"    pm.sendRequest(echoPostRequest, function (err, res) {",
+					"        console.log(\"Requesting new token\");",
+					"        console.log(err ? err : res.json());",
+					"        if (err === null) {",
+					"            var responseJson = res.json();",
+					"            pm.collectionVariables.set(accessTokenVar, responseJson.access_token);",
+					"",
+					"            var expiryDate = new Date();",
+					"            expiryDate.setSeconds(expiryDate.getSeconds() + responseJson.expires_in);",
+					"            pm.collectionVariables.set(accessTokenExpirationVar, expiryDate.getTime());",
+					"        }",
+					"    });",
+					"}",
+					"",
+					"",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "TOKEN_URLfsdf",
+			"value": "http://localhost:8080/testTokenIssuer/token",
+			"type": "default",
+			"disabled": true
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "accessTokenExpiry",
+			"value": ""
+		}
+	]
+}
