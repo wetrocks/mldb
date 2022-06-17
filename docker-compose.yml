@@ -1,10 +1,7 @@
-version: '3.7'
-
 services:
   devdb:
-    image: devdb
-    build:
-      context: .
-      dockerfile: Dockerfile.devdb
+    extends: 
+      file: compose-db.yml
+      service: devdb
     ports:
       - 5432:5432

@@ -1,0 +1,6 @@
+services:
+  devdb:
+    image: devdb
+    build:
+      context: .
+      dockerfile: Dockerfile.devdb

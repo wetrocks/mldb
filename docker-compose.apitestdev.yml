@@ -1,0 +1,24 @@
+#need host.docker.internal in hosts file, see https://github.com/navikt/mock-oauth2-server
+services:
+  devdb:
+    extends: 
+      file: compose-db.yml
+      service: devdb
+  mldbapi:
+    extends: 
+      file: docker-compose.apitest.yml
+      service: mldbapi
+    ports:
+      - 5000:5000
+    depends_on:
+      - devdb
+      - mock-oauth2-server
+    environment:
+      - AUTHENTICATION__DOMAIN=http://host.docker.internal:8080/testTokenIssuer
+  mock-oauth2-server:
+    extends:
+      file: docker-compose.apitest.yml
+      service: mock-oauth2-server
+    ports:
+      - 8080:8080
+    hostname: host.docker.internal
