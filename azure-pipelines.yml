@@ -11,12 +11,30 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
-steps:
+stages:
+- stage: BuildAndTest
+  displayName: Build/Test
+  jobs: 
+  - job: buildTestJob
+    displayName: Build and Test
+    steps:
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'build'
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'test'
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-  
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'test'
+  - job: apiTest
+    displayName: Postman API Tests
+    steps:
+    - task: DockerCompose@0
+      inputs:
+        containerregistrytype: 'Container Registry'
+        dockerComposeFile: 'docker-compose.apitest.yml'
+        qualifyImageNames: false
+        action: 'Run a Docker Compose command'
+        dockerComposeCommand: 'run apitest'
+
+
+
