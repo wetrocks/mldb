@@ -15,7 +15,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(`${pm.info.requestName} - Status code is 200`, function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
@@ -26,7 +26,7 @@
 									"    }",
 									"};",
 									"",
-									"pm.test('Schema is valid', function () {",
+									"pm.test(`${pm.info.requestName} - Schema is valid`, function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(tv4.validate(jsonData, litterTypeSchema)).to.be.true;",
 									"});"
@@ -57,7 +57,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 401\", function () {",
+									"pm.test(`${pm.info.requestName} - Status code is 401`, function () {",
 									"    pm.response.to.have.status(401);",
 									"});"
 								],
@@ -95,7 +95,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 401\", function () {",
+									"pm.test(`${pm.info.requestName} - Status code is 401`, function () {",
 									"    pm.response.to.have.status(401);",
 									"});",
 									""
@@ -129,7 +129,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(`${pm.info.requestName} - Status code is 200`, function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
@@ -146,7 +146,7 @@
 									"    }",
 									"};",
 									"",
-									"pm.test('Schema is valid', function () {",
+									"pm.test(`${pm.info.requestName} - Schema is valid`, function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(tv4.validate(jsonData, siteSchema)).to.be.true;",
 									"});"
