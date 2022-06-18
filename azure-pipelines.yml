@@ -35,6 +35,10 @@ stages:
         qualifyImageNames: false
         action: 'Run a Docker Compose command'
         dockerComposeCommand: 'run apitest'
-
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/newman-report.xml'
+        testRunTitle: 'Postman API Tests'
 
 
