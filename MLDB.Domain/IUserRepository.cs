@@ -8,7 +8,7 @@ namespace MLDB.Domain
     public interface IUserRepository
     {
 
-        public Task<User> findAsync(UInt16 id);
+        public Task<User> findAsync(Int32 id);
 
         public Task<User> findByIdpIdAsync(String idpId);
 

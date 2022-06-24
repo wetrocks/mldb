@@ -14,7 +14,7 @@ namespace MLDB.Infrastructure.Repositories
         public UserRepository(SiteSurveyContext dbContext) {
             _dbCtx = dbContext;
         }
-       public async Task<User> findAsync(UInt16 id) {
+       public async Task<User> findAsync(Int32 id) {
            return await _dbCtx.Users.FindAsync(id);
         }
 

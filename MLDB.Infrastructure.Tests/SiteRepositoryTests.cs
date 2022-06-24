@@ -1,19 +1,21 @@
 ﻿using System;
 using MLDB.Infrastructure.Repositories;
 using NUnit.Framework;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MLDB.Domain;
 using AutoFixture;
+using Npgsql;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
+using DotNet.Testcontainers.Configurations;
 
 namespace MLDB.Infrastructure.IntegrationTests
 {
     [TestOf(typeof(SiteRepository))]
     public class SiteRepositoryTests
     {
-        private SqliteConnection conn;
         private DbContextOptions<SiteSurveyContext> ctxOptions;
         private SiteSurveyContext testCtx;
 
@@ -24,17 +26,24 @@ namespace MLDB.Infrastructure.IntegrationTests
         private Site seedSite;
 
         [SetUp]
-        public void Setup()
+        public async Task Setup()
         {
             fixture = new Fixture();
 
-            conn = new SqliteConnection("DataSource=:memory:");
-            conn.Open();
+            TestcontainerDatabase dbContainer =  new TestcontainersBuilder<PostgreSqlTestcontainer>()
+                .WithDatabase(new PostgreSqlTestcontainerConfiguration {
+                    Database = "db",
+                    Username = "postgres",
+                    Password = "password",
+                 })
+                .Build();
+
+            await dbContainer.StartAsync();
 
             ctxOptions = new DbContextOptionsBuilder<SiteSurveyContext>()
                         //  .LogTo( Console.WriteLine)
                         // .EnableSensitiveDataLogging()
-                        .UseSqlite(conn)
+                        .UseNpgsql(new NpgsqlConnection(dbContainer.ConnectionString))
                         .Options;
             testCtx = new SiteSurveyContext(ctxOptions);
             testCtx.Database.EnsureCreated();
@@ -42,14 +51,12 @@ namespace MLDB.Infrastructure.IntegrationTests
             seedTestData();
 
             testRepo = new SiteRepository(testCtx);
-
         }
 
         [TearDown]
         public void TearDown()
         {
             testCtx.Dispose();
-            conn.Close();
         }
 
         private void seedTestData() {
@@ -67,7 +74,10 @@ namespace MLDB.Infrastructure.IntegrationTests
         {
             var allSites = await testRepo.getAll();
 
-            allSites.Should().ContainEquivalentOf(seedSite);
+            allSites.Should().ContainEquivalentOf(seedSite, opts => opts
+                .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, new TimeSpan(0,0,0,1)))
+                .When(info => info.Path.EndsWith("Timestamp")));
+                // TODO: ^^^^^^^^^^ that better everywhere
         }
 
         [Test]
@@ -83,7 +93,9 @@ namespace MLDB.Infrastructure.IntegrationTests
         {
             var testSite = await testRepo.findAsync(seedSite.Id);
 
-            testSite.Should().BeEquivalentTo(seedSite);
+            testSite.Should().BeEquivalentTo(seedSite, opts => opts
+                .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, new TimeSpan(0,0,0,1)))
+                .When(info => info.Path.EndsWith("Timestamp")));
         }
 
         [Test]
@@ -98,7 +110,9 @@ namespace MLDB.Infrastructure.IntegrationTests
 
             using(var assertCtx = new SiteSurveyContext(ctxOptions)) {
                 var inserted = assertCtx.Sites.Find(created.Id);
-                inserted.Should().BeEquivalentTo(created);
+                inserted.Should().BeEquivalentTo(created, opts => opts
+                    .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, new TimeSpan(0,0,0,1)))
+                    .When(info => info.Path.EndsWith("Timestamp")));
             }
         }
 

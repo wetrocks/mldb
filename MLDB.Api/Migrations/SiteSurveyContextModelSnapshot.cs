@@ -4,6 +4,7 @@ using MLDB.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MLDB.Api.Migrations
 {
@@ -14,19 +15,22 @@ namespace MLDB.Api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.11");
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
+                .HasAnnotation("ProductVersion", "5.0.11")
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.Entity("MLDB.Domain.LitterSourceCategory", b =>
                 {
-                    b.Property<ushort>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -35,13 +39,13 @@ namespace MLDB.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = (ushort)1,
+                            Id = 1,
                             Description = "Stand up paddleboards",
                             Name = "SUP"
                         },
                         new
                         {
-                            Id = (ushort)2,
+                            Id = 2,
                             Description = "Text about fisheries",
                             Name = "Fisheries"
                         });
@@ -51,16 +55,16 @@ namespace MLDB.Api.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreateTimestamp")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CreateUserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -71,31 +75,31 @@ namespace MLDB.Api.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CoordinatorName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreateTimestamp")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CreateUserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("EndTimeStamp")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("SiteId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("StartTimeStamp")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<decimal>("TotalKg")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("numeric");
 
                     b.Property<short>("VolunteerCount")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("smallint");
 
                     b.HasKey("Id");
 
@@ -106,27 +110,28 @@ namespace MLDB.Api.Migrations
 
             modelBuilder.Entity("MLDB.Domain.User", b =>
                 {
-                    b.Property<ushort>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
                     b.Property<DateTime>("CreateTimestamp")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Email")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("EmailVerified")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("IdpId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("UpdateTimestamp")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -138,15 +143,16 @@ namespace MLDB.Api.Migrations
 
             modelBuilder.Entity("MLDB.Infrastructure.Repositories.Model.InternalLitterType", b =>
                 {
-                    b.Property<uint>("Code")
+                    b.Property<long>("Code")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
-                    b.Property<ushort?>("SourceCategoryId")
-                        .HasColumnType("INTEGER");
+                    b.Property<int?>("SourceCategoryId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Code");
 
@@ -157,44 +163,44 @@ namespace MLDB.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Code = 1u,
+                            Code = 1L,
                             Description = "Bags",
-                            SourceCategoryId = (ushort)1
+                            SourceCategoryId = 1
                         },
                         new
                         {
-                            Code = 2u,
+                            Code = 2L,
                             Description = "Caps/Lids",
-                            SourceCategoryId = (ushort)1
+                            SourceCategoryId = 1
                         },
                         new
                         {
-                            Code = 3u,
+                            Code = 3L,
                             Description = "Bottle",
-                            SourceCategoryId = (ushort)1
+                            SourceCategoryId = 1
                         },
                         new
                         {
-                            Code = 4u,
+                            Code = 4L,
                             Description = "Styrofoam",
-                            SourceCategoryId = (ushort)2
+                            SourceCategoryId = 2
                         });
                 });
 
             modelBuilder.Entity("MLDB.Infrastructure.Repositories.Model.JointListLitterType", b =>
                 {
                     b.Property<string>("TypeCode")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Definition")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("J_Code")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("TypeCode");
 
@@ -217,12 +223,12 @@ namespace MLDB.Api.Migrations
 
             modelBuilder.Entity("MLDB.Infrastructure.Repositories.Model.LitterTypeMapping<string, MLDB.Infrastructure.Repositories.Model.JointListLitterType>", b =>
                 {
-                    b.Property<uint>("InternalLitterTypeCode")
-                        .HasColumnType("INTEGER");
+                    b.Property<long>("InternalLitterTypeCode")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("MappedTypeKey")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("InternalLitterTypeCode");
 
@@ -233,18 +239,18 @@ namespace MLDB.Api.Migrations
                     b.HasData(
                         new
                         {
-                            InternalLitterTypeCode = 1u,
+                            InternalLitterTypeCode = 1L,
                             MappedTypeKey = "pl_nn_bag_cabg_"
                         });
                 });
 
             modelBuilder.Entity("MLDB.Infrastructure.Repositories.Model.LitterTypeMapping<uint, MLDB.Infrastructure.Repositories.Model.OsparLitterType>", b =>
                 {
-                    b.Property<uint>("InternalLitterTypeCode")
-                        .HasColumnType("INTEGER");
+                    b.Property<long>("InternalLitterTypeCode")
+                        .HasColumnType("bigint");
 
-                    b.Property<uint>("MappedTypeKey")
-                        .HasColumnType("INTEGER");
+                    b.Property<long>("MappedTypeKey")
+                        .HasColumnType("bigint");
 
                     b.HasKey("InternalLitterTypeCode");
 
@@ -255,22 +261,23 @@ namespace MLDB.Api.Migrations
                     b.HasData(
                         new
                         {
-                            InternalLitterTypeCode = 1u,
-                            MappedTypeKey = 42u
+                            InternalLitterTypeCode = 1L,
+                            MappedTypeKey = 42L
                         });
                 });
 
             modelBuilder.Entity("MLDB.Infrastructure.Repositories.Model.OsparLitterType", b =>
                 {
-                    b.Property<uint>("Code")
+                    b.Property<long>("Code")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
                     b.Property<string>("Category")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Code");
 
@@ -279,25 +286,25 @@ namespace MLDB.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Code = 42u,
+                            Code = 42L,
                             Category = "Plastic",
                             Description = "Ospar Bags"
                         },
                         new
                         {
-                            Code = 43u,
+                            Code = 43L,
                             Category = "Metal",
                             Description = "Ospar Caps/Lids"
                         },
                         new
                         {
-                            Code = 44u,
+                            Code = 44L,
                             Category = "Glass",
                             Description = "Ospar Bottle"
                         },
                         new
                         {
-                            Code = 45u,
+                            Code = 45L,
                             Category = "Polystyrene",
                             Description = "Ospar Styrofoam"
                         });
@@ -314,14 +321,15 @@ namespace MLDB.Api.Migrations
                     b.OwnsMany("LitterItem", "LitterItems", b1 =>
                         {
                             b1.Property<Guid>("SurveyId")
-                                .HasColumnType("TEXT");
+                                .HasColumnType("uuid");
 
                             b1.Property<int>("LitterTypeId")
                                 .ValueGeneratedOnAdd()
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer")
+                                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                             b1.Property<int>("Count")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.HasKey("SurveyId", "LitterTypeId");
 
