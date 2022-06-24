@@ -149,7 +149,9 @@ namespace MLDB.Infrastructure.IntegrationTests
 
             using(var assertCtx = new SiteSurveyContext(ctxOptions)) {
                 var inserted = assertCtx.Surveys.Find(testSurvey.Id);
-                inserted.Should().BeEquivalentTo(created);
+                inserted.Should().BeEquivalentTo(created, opts => opts
+                    .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, new TimeSpan(0,0,0,1)))
+                    .When(info => info.Path.EndsWith("Timestamp")));
             }
         }
 
