@@ -89,6 +89,84 @@
 			"name": "Sites",
 			"item": [
 				{
+					"name": "Post Site w/ no auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(`${pm.info.requestName} - Status code is 401`, function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{API_BASE_URL}}/site",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"site"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Site",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(`${pm.info.requestName} - Status code is 201`, function () {",
+									"    pm.response.to.have.status(201);",
+									"",
+									"    var createdSite = pm.response.json();",
+									"    pm.collectionVariables.set(\"createdSite\", createdSite);",
+									"    pm.collectionVariables.set(\"createdSiteId\", createdSite.id);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{$randomCity}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_BASE_URL}}/site",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"site"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get Sites w/ no auth",
 					"event": [
 						{
@@ -133,6 +211,15 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"pm.test(`${pm.info.requestName} - Contains created site`, function () {",
+									"    const createdSiteId =  pm.collectionVariables.get(\"createdSiteId\");",
+									"    ",
+									"    shouldBeCreated = pm.response.json().filter( x => x.id === createdSiteId );",
+									"",
+									"    pm.expect(shouldBeCreated).length(1);",
+									"});",
+									"",
+									"",
 									"var siteSchema = {",
 									"    \"tite\": \"Sites\",",
 									"    \"type\": \"array\",",
@@ -169,6 +256,229 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Get Site (not exists)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(`${pm.info.requestName} - Status code is 404`, function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_BASE_URL}}/site/{{$randomUUID}}",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"site",
+								"{{$randomUUID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Site (exists)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(`${pm.info.requestName} - Status code is 200`, function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(`${pm.info.requestName} - Site is returned`, function () {",
+									"    const createdSite = pm.variables.get(\"createdSite\");",
+									"    const responseSite = pm.response.json();",
+									"",
+									"    pm.expect(responseSite).to.deep.include(createdSite);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_BASE_URL}}/site/{{createdSiteId}}",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"site",
+								"{{createdSiteId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Put Site w/ no auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(`${pm.info.requestName} - Status code is 401`, function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{API_BASE_URL}}/site/{{createdSiteId}}",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"site",
+								"{{createdSiteId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Put Site (not exists)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(`${pm.info.requestName} - Status code is 404`, function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"{{randomGuid}}\",\n    \"name\": \"Independence\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_BASE_URL}}/site/{{randomGuid}}",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"site",
+								"{{randomGuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Put Site (exists)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(`${pm.info.requestName} - Status code is 204`, function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"{{createdSiteId}}\",\n    \"name\": \"{{$randomCity}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_BASE_URL}}/site/{{createdSiteId}}",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"site",
+								"{{createdSiteId}}"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}
@@ -189,8 +499,11 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
+					"// set collection level variable to random value.  Can't reuse a random value otherwise",
+					"pm.collectionVariables.set(\"randomGuid\", pm.variables.replaceIn('{{$randomUUID}}'));",
+					"",
+					"// Get JWT to use for requests",
 					"const tokenUrl = pm.environment.get('TOKEN_URL');",
-					"//'http://mock-oauth2-server:8080/testTokenIssuer/token'; /",
 					"console.log(tokenUrl);",
 					"const grantType = 'client_credentials';",
 					"const scope = 'apitest';",
@@ -246,10 +559,9 @@
 	],
 	"variable": [
 		{
-			"key": "TOKEN_URLfsdf",
-			"value": "http://localhost:8080/testTokenIssuer/token",
-			"type": "default",
-			"disabled": true
+			"key": "siteName",
+			"value": "",
+			"type": "default"
 		},
 		{
 			"key": "accessToken",
@@ -258,6 +570,21 @@
 		{
 			"key": "accessTokenExpiry",
 			"value": ""
+		},
+		{
+			"key": "createdSite",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "createdSiteId",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "randomGuid",
+			"value": "",
+			"type": "default"
 		}
 	]
 }

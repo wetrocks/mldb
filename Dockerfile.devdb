@@ -14,7 +14,7 @@ RUN dotnet restore --verbosity n;
 COPY . . 
 RUN cd ./MLDB.Api && \
     dotnet tool restore --verbosity n && \
-    dotnet ef migrations script --idempotent -o initdb.sql
+    dotnet ef dbcontext script -o initdb.sql
 
 FROM postgres:14.3-alpine
 ENV POSTGRES_USER=postgres
