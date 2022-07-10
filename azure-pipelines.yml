@@ -10,7 +10,6 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  DOCKER_BUILDKIT: 1
 
 stages:
 - stage: BuildAndTest
@@ -30,6 +29,8 @@ stages:
     displayName: Postman API Tests
     steps:
     - task: DockerCompose@0
+      env:
+        DOCKER_BUILDKIT: 1
       inputs:
         containerregistrytype: 'Container Registry'
         dockerComposeFile: 'docker-compose.apitest.yml'
