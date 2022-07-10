@@ -3,6 +3,6 @@ FROM postman/newman AS newman
 WORKDIR /etc/newman
 COPY ./*.json ./
 
-RUN wget https://raw.githubusercontent.com/eficode/wait-for/v2.2.3/wait-for && chmod +x wait-for
+COPY --chmod=555 ./wait-for ./
 
 ENTRYPOINT ["sh", "-c"]
