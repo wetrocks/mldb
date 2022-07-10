@@ -4,6 +4,8 @@ services:
     extends: 
       file: compose-db.yml
       service: devdb
+    ports:
+      - 5432:5432
   mldbapi:
     extends: 
       file: docker-compose.apitest.yml
