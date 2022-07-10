@@ -219,7 +219,6 @@
 									"    pm.expect(shouldBeCreated).length(1);",
 									"});",
 									"",
-									"",
 									"var siteSchema = {",
 									"    \"tite\": \"Sites\",",
 									"    \"type\": \"array\",",
@@ -481,6 +480,443 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Surveys",
+			"item": [
+				{
+					"name": "Post Survey w/ no auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(`${pm.info.requestName} - Status code is 401`, function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{API_BASE_URL}}/site/{{createdSiteId}}/survey",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"site",
+								"{{createdSiteId}}",
+								"survey"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Survey",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(`${pm.info.requestName} - Status code is 201`, function () {",
+									"    pm.response.to.have.status(201);",
+									"",
+									"    var createdSurvey = pm.response.json();",
+									"    pm.collectionVariables.set(\"createdSurvey\", createdSurvey);",
+									"    pm.collectionVariables.set(\"createdSurveyId\", createdSurvey.id);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"surveyDate\": \"1970-05-20\",\n    \"startTime\": \"16:20:09\",\n    \"endTime\": \"18:09:42\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_BASE_URL}}/site/{{createdSiteId}}/survey",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"site",
+								"{{createdSiteId}}",
+								"survey"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Survey w/ no auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(`${pm.info.requestName} - Status code is 401`, function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_BASE_URL}}/site/{{createdSiteId}}/survey/{{$guid}}",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"site",
+								"{{createdSiteId}}",
+								"survey",
+								"{{$guid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Survey (not exists)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(`${pm.info.requestName} - Status code is 404`, function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_BASE_URL}}/site/{{createdSiteId}}/survey/{{$guid}}",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"site",
+								"{{createdSiteId}}",
+								"survey",
+								"{{$guid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Survey (exists)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(`${pm.info.requestName} - Status code is 200`, function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(`${pm.info.requestName} - Survey is returned`, function () {",
+									"    const createdSurvey = pm.variables.get(\"createdSurvey\");",
+									"    const responseSurvey = pm.response.json();",
+									"",
+									"    pm.expect(responseSurvey).to.deep.include(createdSurvey);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_BASE_URL}}/site/{{createdSiteId}}/survey/{{createdSurveyId}}",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"site",
+								"{{createdSiteId}}",
+								"survey",
+								"{{createdSurveyId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Surveys",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(`${pm.info.requestName} - Status code is 200`, function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(`${pm.info.requestName} - Contains created survey`, function () {",
+									"    const createdSurveyId =  pm.collectionVariables.get(\"createdSurveyId\");",
+									"",
+									"    shouldBeCreated = pm.response.json().filter( x => x.id === createdSurveyId );",
+									"",
+									"    pm.expect(shouldBeCreated).length(1);",
+									"});",
+									"",
+									"",
+									"var surveysSchema = {",
+									"    \"title\": \"Surveys\",",
+									"    \"type\": \"array\",",
+									"    \"items\": {",
+									"        \"type\": \"object\",",
+									"        \"required\": [ \"id\", \"siteId\", \"surveyDate\" ],",
+									"        \"properties\": {",
+									"            \"id\": { \"type\" : \"string\" },",
+									"            \"siteId\" : { \"type\" : \"string\" },",
+									"            \"surveyDate\" : { \"type\" : \"string\" }",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"pm.test(`${pm.info.requestName} - Schema is valid`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(tv4.validate(jsonData, surveysSchema)).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_BASE_URL}}/site/{{createdSiteId}}/survey",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"site",
+								"{{createdSiteId}}",
+								"survey"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Put Survey w/ no auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(`${pm.info.requestName} - Status code is 401`, function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{API_BASE_URL}}/site/{{createdSiteId}}/survey/{{createdSurveyId}}",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"site",
+								"{{createdSiteId}}",
+								"survey",
+								"{{createdSurveyId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Put Survey (not exists)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(`${pm.info.requestName} - Status code is 404`, function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"{{randomGuid}}\",\n    \"siteId\": \"{{createdSiteId}}\",\n    \"surveyDate\": \"1970-05-20\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_BASE_URL}}/site/{{createdSiteId}}/survey/{{randomGuid}}",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"site",
+								"{{createdSiteId}}",
+								"survey",
+								"{{randomGuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Put Survey (exists)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(`${pm.info.requestName} - Status code is 204`, function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"{{createdSurveyId}}\",\n    \"siteId\": \"{{createdSiteId}}\",\n    \"surveyDate\": \"1970-05-20\",\n    \"coordinator\": \"{{$randomFullName}}\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_BASE_URL}}/site/{{createdSiteId}}/survey/{{createdSurveyId}}",
+							"host": [
+								"{{API_BASE_URL}}"
+							],
+							"path": [
+								"site",
+								"{{createdSiteId}}",
+								"survey",
+								"{{createdSurveyId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
 		}
 	],
 	"auth": {
@@ -583,6 +1019,16 @@
 		},
 		{
 			"key": "randomGuid",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "createdSurvey",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "createdSurveyId",
 			"value": "",
 			"type": "default"
 		}
