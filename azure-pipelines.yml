@@ -10,13 +10,37 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  COMPOSE_DOCKER_CLI_BUILD: 1
+  DOCKER_BUILDKIT: 1
 
-steps:
+stages:
+- stage: BuildAndTest
+  displayName: Build/Test
+  jobs: 
+  - job: buildTestJob
+    displayName: Build and Test
+    steps:
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'build'
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'test'
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-  
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'test'
+  - job: apiTest
+    displayName: Postman API Tests
+    steps:
+    - task: DockerCompose@0
+      inputs:
+        containerregistrytype: 'Container Registry'
+        dockerComposeFile: 'docker-compose.apitest.yml'
+        qualifyImageNames: false
+        action: 'Run a Docker Compose command'
+        dockerComposeCommand: 'run apitest'
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/newman-report.xml'
+        testRunTitle: 'Postman API Tests'
+
+

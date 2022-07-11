@@ -1,7 +1,6 @@
 ﻿using System;
 using MLDB.Infrastructure.Repositories;
 using NUnit.Framework;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -9,7 +8,10 @@ using MLDB.Domain;
 using AutoFixture;
 using System.Linq;
 using System.Collections.Generic;
-
+using Npgsql;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
+using DotNet.Testcontainers.Configurations;
 
 
 namespace MLDB.Infrastructure.IntegrationTests
@@ -17,7 +19,6 @@ namespace MLDB.Infrastructure.IntegrationTests
     [TestOf(typeof(SurveyRepository))]
     public class SurveyRepositoryTests
     {
-        private SqliteConnection conn;
         private DbContextOptions<SiteSurveyContext> ctxOptions;
         private SiteSurveyContext testCtx;
 
@@ -32,17 +33,24 @@ namespace MLDB.Infrastructure.IntegrationTests
         private List<LitterItem> seedLitterItems;
 
         [SetUp]
-        public void Setup()
+        public async Task Setup()
         {
             fixture = new AutoFixture.Fixture();
 
-            conn = new SqliteConnection("DataSource=:memory:");
-            conn.Open();
+            TestcontainerDatabase dbContainer = new TestcontainersBuilder<PostgreSqlTestcontainer>()
+                .WithDatabase(new PostgreSqlTestcontainerConfiguration {
+                    Database = "db",
+                    Username = "postgres",
+                    Password = "password",
+                 })
+                .Build();
+
+            await dbContainer.StartAsync();
 
             ctxOptions = new DbContextOptionsBuilder<SiteSurveyContext>()
                        //  .LogTo( Console.WriteLine)
                         // .EnableSensitiveDataLogging()
-                        .UseSqlite(conn)
+                        .UseNpgsql(new NpgsqlConnection(dbContainer.ConnectionString))
                         .Options;
             testCtx = new SiteSurveyContext(ctxOptions);
             testCtx.Database.EnsureCreated();
@@ -56,9 +64,7 @@ namespace MLDB.Infrastructure.IntegrationTests
         public void TearDown()
         {
             testCtx.Dispose();
-            conn.Close();
         }
-
 
         private void seedTestData() {
             using( var seedCtx = new SiteSurveyContext(ctxOptions)) {
@@ -143,7 +149,9 @@ namespace MLDB.Infrastructure.IntegrationTests
 
             using(var assertCtx = new SiteSurveyContext(ctxOptions)) {
                 var inserted = assertCtx.Surveys.Find(testSurvey.Id);
-                inserted.Should().BeEquivalentTo(created);
+                inserted.Should().BeEquivalentTo(created, opts => opts
+                    .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, new TimeSpan(0,0,0,1)))
+                    .When(info => info.Path.EndsWith("Timestamp")));
             }
         }
 
@@ -178,7 +186,9 @@ namespace MLDB.Infrastructure.IntegrationTests
 
             using( var assertCtx = new SiteSurveyContext(ctxOptions) ) {
                 var testUpdated = assertCtx.Surveys.Find(seedSurvey.Id);
-                testUpdated.Should().BeEquivalentTo(testSurvey);
+                testUpdated.Should().BeEquivalentTo(testSurvey, opts => opts
+                    .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, new TimeSpan(0,0,0,1)))
+                    .When(info => info.Path.EndsWith("TimeStamp")));
            }
         }
 

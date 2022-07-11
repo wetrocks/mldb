@@ -1,0 +1,7 @@
+services:
+  devdb:
+    extends: 
+      file: compose-db.yml
+      service: devdb
+    ports:
+      - 5432:5432

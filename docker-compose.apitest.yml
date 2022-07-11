@@ -1,0 +1,56 @@
+services:
+  devdb:
+    extends: 
+      file: compose-db.yml
+      service: devdb
+  mldbapi:
+    image: mldbapi
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - devdb
+      - mock-oauth2-server
+    environment:
+      - AUTHENTICATION__INSECUREMETADATA=true
+      - AUTHENTICATION__DOMAIN=http://mock-oauth2-server:8080/testTokenIssuer
+      - AUTHENTICATION__AUDIENCE=https://mldb
+      - CONNECTIONSTRINGS__PGCONN=Host=devdb;Port=5432;Username=postgres;Password=password
+  mock-oauth2-server:
+    image: ghcr.io/navikt/mock-oauth2-server:0.4.8
+    environment:
+      JSON_CONFIG: |
+        {
+            "interactiveLogin": true,
+            "httpServer": "NettyWrapper",
+            "tokenCallbacks": [
+                {
+                    "issuerId": "testTokenIssuer",
+                    "tokenExpiry": 600,
+                    "requestMappings": [
+                        {
+                            "requestParam": "scope",
+                            "match": "apitest",
+                            "claims": {
+                                "sub": "testUser",
+                                "aud": [
+                                    "https://mldb"
+                                ],
+                                "https://mldb/claims/name": "Testy McUserson"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+  apitest:
+    image: mldb/apitest
+    build:
+      context: ./apiTest
+      dockerfile: Dockerfile
+    depends_on:
+      - mldbapi
+      - mock-oauth2-server
+    volumes:
+      - .:/output
+    command: ["/etc/newman/wait-for $WAIT_URL -- newman run $POSTMAN_COLLECTION --environment $POSTMAN_ENV --reporters emojitrain,junit --reporter-junit-export=/output/newman-report.xml"]

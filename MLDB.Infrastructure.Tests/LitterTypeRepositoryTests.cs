@@ -1,20 +1,21 @@
 ﻿using System;
 using MLDB.Infrastructure.Repositories;
 using NUnit.Framework;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MLDB.Domain;
 using AutoFixture;
+using Npgsql;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
+using DotNet.Testcontainers.Configurations;
 
 namespace MLDB.Infrastructure.IntegrationTests
 {
     [TestOf(typeof(LitterTypeRepository))]
     public class LitterTypeRepositoryTests
     {
-        private SqliteConnection conn;
-        private DbContextOptions<SiteSurveyContext> ctxOptions;
         private SiteSurveyContext testCtx;
 
         private ILitterTypeRepository testRepo;
@@ -22,39 +23,43 @@ namespace MLDB.Infrastructure.IntegrationTests
         private Fixture fixture;
 
         [SetUp]
-        public void Setup()
+        public async Task Setup()
         {
-            fixture = new Fixture();
+           TestcontainerDatabase dbContainer =  new TestcontainersBuilder<PostgreSqlTestcontainer>()
+                .WithDatabase(new PostgreSqlTestcontainerConfiguration {
+                    Database = "db",
+                    Username = "postgres",
+                    Password = "password",
+                 })
+                .Build();
 
-            conn = new SqliteConnection("DataSource=:memory:");
-            conn.Open();
+            await dbContainer.StartAsync();
 
-            ctxOptions = new DbContextOptionsBuilder<SiteSurveyContext>()
-                        //  .LogTo( Console.WriteLine)
-                        // .EnableSensitiveDataLogging()
-                        .UseSqlite(conn)
+            var ctxOptions = new DbContextOptionsBuilder<SiteSurveyContext>()
+                        // .LogTo(Console.WriteLine)
+                        //.EnableSensitiveDataLogging()                
+                        .UseNpgsql(new NpgsqlConnection(dbContainer.ConnectionString))
                         .Options;
             testCtx = new SiteSurveyContext(ctxOptions);
             testCtx.Database.EnsureCreated();
 
             testRepo = new LitterTypeRepository(testCtx);
 
+            fixture = new Fixture();
         }
 
         [TearDown]
         public void TearDown()
         {
             testCtx.Dispose();
-            conn.Close();
         }
-
 
         [Test]
         public async Task getAll_ReturnsAll()
         {
             var allTypes = await testRepo.getAll();
 
-            // TODO: get values from reference data json
+            // TODO: get values from reference data json?
             allTypes.Should().HaveCount(4);
         }
 
@@ -71,7 +76,7 @@ namespace MLDB.Infrastructure.IntegrationTests
         {
             var litterType = await testRepo.findAsync(1);
 
-            // TODO: get values from reference data json or preload
+            // TODO: get values from reference data json or preload?
             litterType.Id.Should().Be(1);
             litterType.Description.Should().Be("Bags");
             litterType.SourceCategory.Should().BeEquivalentTo(new LitterSourceCategory(1, "SUP", "Stand up paddleboards"));

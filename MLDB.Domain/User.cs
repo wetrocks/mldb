@@ -4,7 +4,7 @@ using System;
 namespace MLDB.Domain {
     public class User {
 
-        public UInt16 Id{ get; init; }
+        public Int32 Id{ get; init; }
 
         public String IdpId { get; init; }
 

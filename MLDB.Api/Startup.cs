@@ -23,6 +23,7 @@ using Serilog;
 using MLDB.Infrastructure.Repositories;
 using MLDB.Domain;
 
+
 namespace MLDB.Api
 {
     public class Startup
@@ -47,6 +48,9 @@ namespace MLDB.Api
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options =>
             {
+                if( Configuration["Authentication:InsecureMetadata"] == "true" ) {
+                    options.RequireHttpsMetadata = false;
+                }
                 options.Authority = Configuration["Authentication:Domain"];
                 options.Audience = Configuration["Authentication:Audience"];
 
@@ -75,8 +79,8 @@ namespace MLDB.Api
                     });
 
             services.AddDbContext<SiteSurveyContext>(opt =>
-               opt.UseSqlite(Configuration.GetConnectionString("mldbDB"), b => b.MigrationsAssembly("MLDB.Api")));   
-            
+               opt.UseNpgsql(Configuration.GetConnectionString("pgConn"), b => b.MigrationsAssembly("MLDB.Api")));   
+
             // require authentication by default, make controller opt-out for anonymous
             services.AddControllers(options =>
             {
