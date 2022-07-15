@@ -14,9 +14,17 @@ namespace MLDB.Domain {
         
         public Boolean EmailVerified{ get; set; }
 
-        public DateTime CreateTimestamp { get; set; }
+        private DateTime _createTimestamp;
+        public DateTime CreateTimestamp { 
+            get => _createTimestamp; 
+            set => _createTimestamp = value.Kind == DateTimeKind.Utc ? value : throw new ArgumentException("Kind must be Utc");
+        }
 
-        public DateTime UpdateTimestamp { get; set; }
+        private DateTime _updateTimestamp;
+        public DateTime UpdateTimestamp { 
+            get => _updateTimestamp; 
+            set => _updateTimestamp = value.Kind == DateTimeKind.Utc ? value : throw new ArgumentException("Kind must be Utc");
+        }
 
 
         public User(String IdpId) {
