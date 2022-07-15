@@ -1,12 +1,12 @@
 # Copy every then delete everything except project files used for restore 
-FROM mcr.microsoft.com/dotnet/sdk:5.0-focal AS projects-only
+FROM mcr.microsoft.com/dotnet/sdk:6.0-jammy AS projects-only
 WORKDIR /src
 COPY . .
 RUN find . -name NuGet.Config -o -name "*.sln" -prune -o \! -type d \! -name \*.csproj -exec rm -f '{}' + \
      && find . -depth -type d -empty -exec rmdir '{}' \;
 
 # copy project files and restore first to take advantage of cache
-FROM mcr.microsoft.com/dotnet/sdk:5.0-focal AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0-jammy AS build
 WORKDIR /src
 COPY --from=projects-only /src .
 RUN dotnet restore --verbosity n;
@@ -18,7 +18,7 @@ WORKDIR /src
 RUN dotnet publish ./MLDB.Api --no-restore -c Release -o /out /p:UseAppHost=false && \
     rm /out/*.pdb
 
-FROM mcr.microsoft.com/dotnet/aspnet:5.0-focal AS base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-jammy AS base
 WORKDIR /app
 EXPOSE 5000
 
