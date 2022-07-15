@@ -69,6 +69,7 @@ namespace MLDB.Infrastructure.IntegrationTests
         private void seedTestData() {
             using( var seedCtx = new SiteSurveyContext(ctxOptions)) {
                 seedSite = fixture.Build<Site>()
+                                    .With( x => x.CreateTimestamp, DateTime.UtcNow)
                                     .Create();
                 seedCtx.Add(seedSite);
 
@@ -79,6 +80,9 @@ namespace MLDB.Infrastructure.IntegrationTests
                 seedLitterItems = fixture.CreateMany<LitterItem>().ToList();
                 seedSurveyWithItems = fixture.Build<Survey>()
                                             .With( x => x.SiteId, seedSite.Id)
+                                            .With( x => x.CreateTimestamp, DateTime.UtcNow)
+                                            .With( x => x.StartTimeStamp, DateTime.UtcNow)
+                                            .With( x => x.EndTimeStamp, DateTime.UtcNow)
                                             .Create();
                 seedSurveyWithItems.updateLitterItems(seedLitterItems);
                 seedCtx.Add(seedSurveyWithItems);
@@ -111,7 +115,7 @@ namespace MLDB.Infrastructure.IntegrationTests
             testSurveys.Should().BeNull();
         }
 
-        
+        [Test]
         public async Task findSurvey_whenExists_ReturnsSurvey()
         {
             var testSurvey = await testRepo.findAsync(seedSurveyWithItems.Id);

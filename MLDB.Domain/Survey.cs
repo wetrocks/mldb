@@ -12,13 +12,25 @@ namespace MLDB.Domain
 
         public string CreateUserId{ get; init; }
 
-        public  DateTime CreateTimestamp { get; init; }
+        private DateTime _createTs = DateTime.MinValue.ToUniversalTime();
+        public  DateTime CreateTimestamp { 
+            get => _createTs;
+            init => _createTs = value.Kind == DateTimeKind.Utc ? value : throw new ArgumentException("Kind must be Utc");
+        }
         
         public string CoordinatorName{ get; set; }
 
-        public DateTime StartTimeStamp{ get; set; }
+        private DateTime _startTs = DateTime.MinValue.ToUniversalTime();
+        public DateTime StartTimeStamp { 
+            get => _startTs;
+            set => _startTs = value.Kind == DateTimeKind.Utc ? value : throw new ArgumentException("Kind must be Utc");
+        }
 
-        public DateTime EndTimeStamp{ get; set; }
+        private DateTime _endTs = DateTime.MinValue.ToUniversalTime();
+        public DateTime EndTimeStamp{ 
+            get => _endTs;
+            set => _endTs = value.Kind == DateTimeKind.Utc ? value : throw new ArgumentException("Kind must be Utc");
+        }
 
         public Int16 VolunteerCount{ get; set; }
 

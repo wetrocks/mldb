@@ -9,6 +9,7 @@ using MLDB.Domain;
 using AutoFixture;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace MLDB.Api.Tests.ServiceTests
 {
@@ -92,6 +93,8 @@ namespace MLDB.Api.Tests.ServiceTests
 
             var dbUser = fixture.Build<User>()
                                 .With( u => u.IdpId, testIdpUser)
+                                .With( u => u.CreateTimestamp, DateTime.UtcNow)
+                                .With( u => u.UpdateTimestamp, DateTime.UtcNow)
                                 .Create();
 
             userRepo.Setup(  x => x.findByIdpIdAsync(testIdpUser))

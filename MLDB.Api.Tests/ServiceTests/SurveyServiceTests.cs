@@ -45,7 +45,10 @@ namespace MLDB.Api.Tests.ServiceTests {
             surveyRepo = new Mock<ISurveyRepository>();
             testSvc = new SurveyService(userSvc.Object, siteRepo.Object, surveyRepo.Object, new Mock<ILogger<SurveyService>>().Object);
 
-            testUser = fixture.Build<User>().Create();
+            testUser = fixture.Build<User>()
+                            .With( x => x.CreateTimestamp, DateTime.UtcNow)
+                            .With( u => u.UpdateTimestamp, DateTime.UtcNow)
+                            .Create();
             userSvc.Setup( x => x.findOrAddUserAsync(It.IsAny<ClaimsPrincipal>()))
                    .ReturnsAsync(testUser);
         }

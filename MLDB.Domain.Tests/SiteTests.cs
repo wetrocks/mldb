@@ -28,7 +28,7 @@ namespace MLDB.Domain.Tests
         }
 
         [Test]
-        public void SetCreateTS_onlyAllowsUTC()
+        public void CreateTS_onlyAllowsUTC()
         {
             Assert.Throws<ArgumentException>( () => { 
                 var testSite = new Site(fixture.Create<string>(), fixture.Create<string>()) { CreateTimestamp = DateTime.Now };
