@@ -66,7 +66,7 @@ namespace MLDB.Infrastructure.IntegrationTests
         [Test]
         public async Task find_WhenNotExists_ReturnsNull()
         {
-            var litterType = await testRepo.findAsync(fixture.Create<UInt32>());
+            var litterType = await testRepo.findAsync(UInt32.MaxValue);
 
             litterType.Should().BeNull();
         }
