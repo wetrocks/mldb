@@ -120,7 +120,9 @@ namespace MLDB.Infrastructure.IntegrationTests
         {
             var testSurvey = await testRepo.findAsync(seedSurveyWithItems.Id);
 
-            testSurvey.Should().BeEquivalentTo( seedSurveyWithItems );
+            testSurvey.Should().BeEquivalentTo( seedSurveyWithItems, opts => opts
+                              .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, new TimeSpan(0,0,0,1)))
+                              .When(info => info.Path.EndsWith("tamp")));
         }
 
         [Test]
