@@ -62,6 +62,7 @@ namespace MLDB.Infrastructure.IntegrationTests
         private void seedTestData() {
             using( var seedCtx = new SiteSurveyContext(ctxOptions)) {
                 seedSite = fixture.Build<Site>()
+                                    .With( x => x.CreateTimestamp, DateTime.UtcNow)
                                     .Create();
                 seedCtx.Add(seedSite);
 
@@ -101,7 +102,9 @@ namespace MLDB.Infrastructure.IntegrationTests
         [Test]
         public async Task insert_AddsNewSite()
         {
-            var testSite = fixture.Build<Site>().Create();
+            var testSite = fixture.Build<Site>()
+                                  .With( x => x.CreateTimestamp, DateTime.UtcNow)
+                                  .Create();
 
             var created = await testRepo.insertAsync(testSite);
             testCtx.SaveChanges();

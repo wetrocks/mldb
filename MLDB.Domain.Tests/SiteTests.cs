@@ -26,5 +26,13 @@ namespace MLDB.Domain.Tests
 
             testSite.CreateTimestamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
         }
+
+        [Test]
+        public void SetCreateTS_onlyAllowsUTC()
+        {
+            Assert.Throws<ArgumentException>( () => { 
+                var testSite = new Site(fixture.Create<string>(), fixture.Create<string>()) { CreateTimestamp = DateTime.Now };
+            });
+        }
     }
 }

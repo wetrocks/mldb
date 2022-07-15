@@ -11,7 +11,11 @@ namespace MLDB.Domain
 
         public string CreateUserId{ get; init; }
 
-        public  DateTime CreateTimestamp { get; init; }
+        private DateTime _createTs;
+        public  DateTime CreateTimestamp { 
+            get => _createTs;
+            init => _createTs = value.Kind == DateTimeKind.Utc ? value : throw new ArgumentException("Kind must be Utc");
+        }
 
         public Site( string name, string createUserId ) {
             Name = name;
