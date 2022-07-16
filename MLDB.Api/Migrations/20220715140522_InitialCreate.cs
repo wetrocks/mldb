@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
+#nullable disable
+
 namespace MLDB.Api.Migrations
 {
     public partial class InitialCreate : Migration
@@ -26,7 +28,8 @@ namespace MLDB.Api.Migrations
                 name: "LitterSourceCategory",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: true),
                     Description = table.Column<string>(type: "text", nullable: true)
                 },
@@ -39,7 +42,8 @@ namespace MLDB.Api.Migrations
                 name: "OsparLitterTypes",
                 columns: table => new
                 {
-                    Code = table.Column<long>(type: "bigint", nullable: false),
+                    Code = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Description = table.Column<string>(type: "text", nullable: true),
                     Category = table.Column<string>(type: "text", nullable: true)
                 },
@@ -55,7 +59,7 @@ namespace MLDB.Api.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: true),
                     CreateUserId = table.Column<string>(type: "text", nullable: true),
-                    CreateTimestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    CreateTimestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -66,13 +70,14 @@ namespace MLDB.Api.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     IdpId = table.Column<string>(type: "text", nullable: true),
                     Name = table.Column<string>(type: "text", nullable: true),
                     Email = table.Column<string>(type: "text", nullable: true),
                     EmailVerified = table.Column<bool>(type: "boolean", nullable: false),
-                    CreateTimestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    UpdateTimestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    CreateTimestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdateTimestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -83,7 +88,8 @@ namespace MLDB.Api.Migrations
                 name: "InternalLitterTypes",
                 columns: table => new
                 {
-                    Code = table.Column<long>(type: "bigint", nullable: false),
+                    Code = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Description = table.Column<string>(type: "text", nullable: true),
                     SourceCategoryId = table.Column<int>(type: "integer", nullable: true)
                 },
@@ -94,8 +100,7 @@ namespace MLDB.Api.Migrations
                         name: "FK_InternalLitterTypes_LitterSourceCategory_SourceCategoryId",
                         column: x => x.SourceCategoryId,
                         principalTable: "LitterSourceCategory",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -105,10 +110,10 @@ namespace MLDB.Api.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     SiteId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreateUserId = table.Column<string>(type: "text", nullable: true),
-                    CreateTimestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreateTimestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CoordinatorName = table.Column<string>(type: "text", nullable: true),
-                    StartTimeStamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    EndTimeStamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    StartTimeStamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EndTimeStamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     VolunteerCount = table.Column<short>(type: "smallint", nullable: false),
                     TotalKg = table.Column<decimal>(type: "numeric", nullable: false)
                 },
@@ -196,8 +201,8 @@ namespace MLDB.Api.Migrations
                 columns: new[] { "TypeCode", "Definition", "Description", "J_Code" },
                 values: new object[,]
                 {
-                    { "pl_nn_bag_cabg_", "Shopping bags are medium-sized bags, typically around 10-20 litres in volume (though much larger versions exist, especially for non-grocery shopping), that are used by shoppers to carry home their purchases. Shopping bags can be made with a variety of plastics.", null, "J3" },
-                    { "another_one", "Another JLIST description", null, "J42" }
+                    { "another_one", "Another JLIST description", null, "J42" },
+                    { "pl_nn_bag_cabg_", "Shopping bags are medium-sized bags, typically around 10-20 litres in volume (though much larger versions exist, especially for non-grocery shopping), that are used by shoppers to carry home their purchases. Shopping bags can be made with a variety of plastics.", null, "J3" }
                 });
 
             migrationBuilder.InsertData(

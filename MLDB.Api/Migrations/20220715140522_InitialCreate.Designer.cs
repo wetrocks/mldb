@@ -7,26 +7,30 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
+#nullable disable
+
 namespace MLDB.Api.Migrations
 {
     [DbContext(typeof(SiteSurveyContext))]
-    [Migration("20220619140511_InitialCreate")]
+    [Migration("20220715140522_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.11")
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                .HasAnnotation("ProductVersion", "6.0.7")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("MLDB.Domain.LitterSourceCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -60,7 +64,7 @@ namespace MLDB.Api.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreateTimestamp")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreateUserId")
                         .HasColumnType("text");
@@ -83,19 +87,19 @@ namespace MLDB.Api.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreateTimestamp")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreateUserId")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("EndTimeStamp")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("SiteId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("StartTimeStamp")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("TotalKg")
                         .HasColumnType("numeric");
@@ -114,11 +118,12 @@ namespace MLDB.Api.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreateTimestamp")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .HasColumnType("text");
@@ -133,7 +138,7 @@ namespace MLDB.Api.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("UpdateTimestamp")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -147,8 +152,9 @@ namespace MLDB.Api.Migrations
                 {
                     b.Property<long>("Code")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Code"));
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -236,7 +242,7 @@ namespace MLDB.Api.Migrations
 
                     b.HasIndex("MappedTypeKey");
 
-                    b.ToTable("LitterTypeMapping_JointList");
+                    b.ToTable("LitterTypeMapping_JointList", (string)null);
 
                     b.HasData(
                         new
@@ -258,7 +264,7 @@ namespace MLDB.Api.Migrations
 
                     b.HasIndex("MappedTypeKey");
 
-                    b.ToTable("LitterTypeMapping_Ospar");
+                    b.ToTable("LitterTypeMapping_Ospar", (string)null);
 
                     b.HasData(
                         new
@@ -272,8 +278,9 @@ namespace MLDB.Api.Migrations
                 {
                     b.Property<long>("Code")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Code"));
 
                     b.Property<string>("Category")
                         .HasColumnType("text");
@@ -327,8 +334,9 @@ namespace MLDB.Api.Migrations
 
                             b1.Property<int>("LitterTypeId")
                                 .ValueGeneratedOnAdd()
-                                .HasColumnType("integer")
-                                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                                .HasColumnType("integer");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("LitterTypeId"));
 
                             b1.Property<int>("Count")
                                 .HasColumnType("integer");

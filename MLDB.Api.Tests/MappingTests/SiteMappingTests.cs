@@ -25,6 +25,7 @@ namespace MLDB.Api.Tests.MappingTests {
         [Test]
         public void siteMapping_ToDTO_ShouldMapExpectedFields() {
             var testSite = fixture.Build<Site>()
+                                .With( x => x.CreateTimestamp, DateTime.UtcNow )
                                 .Create();
 
             // Perform mapping

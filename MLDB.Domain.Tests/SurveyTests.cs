@@ -19,6 +19,14 @@ namespace MLDB.Domain.Tests
             fixture = new AutoFixture.Fixture();
         }
 
+        private Survey newSurvey() {
+            return fixture.Build<Survey>()
+                        .With( x => x.CreateTimestamp, DateTime.UtcNow)
+                        .With( x => x.StartTimeStamp, DateTime.UtcNow)
+                        .With( x => x.EndTimeStamp, DateTime.UtcNow)
+                        .Create();
+        }
+
         [Test]
         public void CreateSurvey_setsCreateTimestamp()
         {
@@ -30,8 +38,7 @@ namespace MLDB.Domain.Tests
         [Test]
         public void updateLitterItems_UpdatesLitterItems()
         {
-            var testSurvey = fixture.Build<Survey>()
-                                    .Create();
+            var testSurvey = newSurvey();
             var testItems = fixture.CreateMany<LitterItem>().ToList();
             
             testSurvey.updateLitterItems(testItems);
@@ -42,14 +49,39 @@ namespace MLDB.Domain.Tests
         [Test]
         public void updateLitterItems_DoesNotAllowDuplicateTypes()
         {
-            var testSurvey = fixture.Build<Survey>()
-                                    .Create();
+            var testSurvey = newSurvey();
             var testItems = fixture.CreateMany<LitterItem>().ToList();
             
             testItems.Add(new LitterItem(testItems.First().LitterTypeId));
 
              Assert.Throws<ArgumentException>( () => { 
                 testSurvey.updateLitterItems(testItems);
+            });
+        }
+
+        [Test]
+        public void CreateTS_onlyAllowsUTC()
+        {
+            Assert.Throws<ArgumentException>( () => { 
+                var testSite = new Survey(fixture.Create<Guid>(), fixture.Create<string>()) { CreateTimestamp = DateTime.Now };
+            });
+        }
+
+        [Test]
+        public void StartTS_onlyAllowsUTC()
+        {
+            Assert.Throws<ArgumentException>( () => { 
+                var testSite = new Survey(fixture.Create<Guid>(), fixture.Create<string>());
+                testSite.StartTimeStamp = DateTime.Now;
+            });
+        }
+
+        [Test]
+        public void EndTS_onlyAllowsUTC()
+        {
+            Assert.Throws<ArgumentException>( () => { 
+                var testSite = new Survey(fixture.Create<Guid>(), fixture.Create<string>());
+                testSite.EndTimeStamp = DateTime.Now;
             });
         }
     }

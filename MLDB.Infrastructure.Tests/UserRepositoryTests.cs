@@ -59,11 +59,18 @@ namespace MLDB.Infrastructure.IntegrationTests
             testCtx.Dispose();
         }
 
+        private User newUser() {
+            return fixture.Build<User>()
+                                  .Without( u => u.Id )
+                                  .With( u => u.CreateTimestamp, DateTime.UtcNow)
+                                  .With( u => u.UpdateTimestamp, DateTime.UtcNow)
+                                  .Create();
+        }
+
         private void seedTestData() {
             using( var seedCtx = new SiteSurveyContext(ctxOptions)) {
-                seedUser = fixture.Build<User>()
-                                  .Without( u => u.Id )
-                                  .Create();
+                seedUser = newUser();
+
                 seedUser = seedCtx.Users.Add(seedUser).Entity;
 
                 seedCtx.SaveChanges();
@@ -109,9 +116,7 @@ namespace MLDB.Infrastructure.IntegrationTests
         [Test]
         public async Task insert_AddsNewUser()
         {
-            var testUser = fixture.Build<User>()
-                                  .Without( u => u.Id )
-                                  .Create();
+            var testUser = newUser();
 
             var created = await testRepo.insertAsync(testUser);
             testCtx.SaveChanges();
@@ -132,6 +137,8 @@ namespace MLDB.Infrastructure.IntegrationTests
             var testUser = fixture.Build<User>()
                                   .Without( u => u.Id )
                                   .With( u => u.IdpId,  seedUser.IdpId )
+                                  .With( u => u.CreateTimestamp, DateTime.UtcNow)
+                                  .With( u => u.UpdateTimestamp, DateTime.UtcNow)
                                   .Create();
 
             Assert.ThrowsAsync<DbUpdateException>( async () => { 

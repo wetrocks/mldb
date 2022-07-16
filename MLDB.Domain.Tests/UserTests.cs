@@ -34,5 +34,23 @@ namespace MLDB.Domain.Tests
             
             testUser.UpdateTimestamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
         }
+
+        [Test]
+        public void SetCreateTS_onlyAllowsUTC()
+        {
+            Assert.Throws<ArgumentException>( () => { 
+                var testUser = new User(fixture.Create<string>());
+                testUser.CreateTimestamp = DateTime.Now;
+            });
+        }
+
+        [Test]
+        public void SetUpdateTS_onlyAllowsUTC()
+        {
+            Assert.Throws<ArgumentException>( () => { 
+                var testUser = new User(fixture.Create<string>());
+                testUser.UpdateTimestamp = DateTime.Now;
+            });
+        }
     }
 }

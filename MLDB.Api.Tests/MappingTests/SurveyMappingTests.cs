@@ -28,8 +28,9 @@ namespace MLDB.Api.Tests.MappingTests {
             mapper = configuration.CreateMapper();
 
             testSurvey = fixture.Build<Survey>()
-                                .With( x => x.StartTimeStamp, new DateTime(1969,4,20,16,20,09))
-                                .With( x => x.EndTimeStamp, new DateTime(1969,4,20,18,09,42))
+                                .With( x => x.CreateTimestamp, DateTime.UtcNow )
+                                .With( x => x.StartTimeStamp, new DateTime(1969,4,20,16,20,09, DateTimeKind.Utc))
+                                .With( x => x.EndTimeStamp, new DateTime(1969,4,20,18,09,42, DateTimeKind.Utc))
                                 .Create();
             testSurvey.updateLitterItems(fixture.CreateMany<LitterItem>());               
         }
