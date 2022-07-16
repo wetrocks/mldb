@@ -38,6 +38,7 @@ namespace MLDB.Infrastructure.IntegrationTests
             fixture = new AutoFixture.Fixture();
 
             TestcontainerDatabase dbContainer = new TestcontainersBuilder<PostgreSqlTestcontainer>()
+                .WithImage("postgres:14.3-alpine")
                 .WithDatabase(new PostgreSqlTestcontainerConfiguration {
                     Database = "db",
                     Username = "postgres",
