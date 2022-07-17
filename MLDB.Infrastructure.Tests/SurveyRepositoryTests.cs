@@ -17,7 +17,6 @@ using DotNet.Testcontainers.Configurations;
 namespace MLDB.Infrastructure.IntegrationTests
 {
     [TestOf(typeof(SurveyRepository))]
-    [Ignore("TestContaiers broken temporarily so can't reproduce issue happening in pipeline")]
     public class SurveyRepositoryTests
     {
         private DbContextOptions<SiteSurveyContext> ctxOptions;

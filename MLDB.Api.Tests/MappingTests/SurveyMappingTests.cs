@@ -29,8 +29,9 @@ namespace MLDB.Api.Tests.MappingTests {
 
             testSurvey = fixture.Build<Survey>()
                                 .With( x => x.CreateTimestamp, DateTime.UtcNow )
-                                .With( x => x.StartTimeStamp, new DateTime(1969,4,20,16,20,09, DateTimeKind.Utc))
-                                .With( x => x.EndTimeStamp, new DateTime(1969,4,20,18,09,42, DateTimeKind.Utc))
+                                .With( x => x.SurveyDate, new DateOnly(1970, 05, 21))
+                                .With( x => x.StartTime, new TimeOnly(16,19,59))
+                                .With( x => x.EndTime, new TimeOnly(18,09,42))
                                 .Create();
             testSurvey.updateLitterItems(fixture.CreateMany<LitterItem>());               
         }
@@ -41,8 +42,8 @@ namespace MLDB.Api.Tests.MappingTests {
             var surveyDTO  = mapper.Map<SurveyDTO>(testSurvey);
 
             surveyDTO.Id.Should().Be(testSurvey.Id);
-            surveyDTO.SurveyDate.Should().Be("1969-04-20");
-            surveyDTO.StartTime.Should().Be("16:20:09");
+            surveyDTO.SurveyDate.Should().Be("1970-05-21");
+            surveyDTO.StartTime.Should().Be("16:19:59");
             surveyDTO.EndTime.Should().Be("18:09:42");
             surveyDTO.Coordinator.Should().Be(testSurvey.CoordinatorName);
             surveyDTO.VolunteerCount.Should().Be(testSurvey.VolunteerCount);

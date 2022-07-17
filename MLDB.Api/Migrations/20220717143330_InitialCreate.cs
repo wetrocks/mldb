@@ -112,8 +112,9 @@ namespace MLDB.Api.Migrations
                     CreateUserId = table.Column<string>(type: "text", nullable: true),
                     CreateTimestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CoordinatorName = table.Column<string>(type: "text", nullable: true),
-                    StartTimeStamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EndTimeStamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    SurveyDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    StartTime = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
+                    EndTime = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
                     VolunteerCount = table.Column<short>(type: "smallint", nullable: false),
                     TotalKg = table.Column<decimal>(type: "numeric", nullable: false)
                 },

@@ -59,14 +59,9 @@ namespace MLDB.Api.Services
             survey.CoordinatorName = dto.Coordinator;
             survey.VolunteerCount = dto.VolunteerCount;
             survey.TotalKg = dto.TotalKg;
-
-            survey.StartTimeStamp = 
-                DateTime.ParseExact($"{dto.SurveyDate}T{dto.StartTime ?? "00:00:00"}Z", "yyyy-MM-ddTHH:mm:ssZ", 
-                                    CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
-
-            survey.EndTimeStamp = 
-                DateTime.ParseExact($"{dto.SurveyDate}T{dto.EndTime ?? "00:00:00"}Z", "yyyy-MM-ddTHH:mm:ssZ", 
-                                    CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
+            survey.SurveyDate = DateOnly.ParseExact(dto.SurveyDate, "yyyy-MM-dd");
+            survey.StartTime = TimeOnly.ParseExact(dto.StartTime, "HH:mm:ss");
+            survey.EndTime = TimeOnly.ParseExact(dto.EndTime, "HH:mm:ss");
  
             survey.updateLitterItems(dto.LitterItems.Select( x => new LitterItem(int.Parse(x.Key), x.Value)).ToList());
 
