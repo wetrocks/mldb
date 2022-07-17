@@ -22,8 +22,9 @@ namespace MLDB.Domain.Tests
         private Survey newSurvey() {
             return fixture.Build<Survey>()
                         .With( x => x.CreateTimestamp, DateTime.UtcNow)
-                        .With( x => x.StartTimeStamp, DateTime.UtcNow)
-                        .With( x => x.EndTimeStamp, DateTime.UtcNow)
+                        .With( x => x.SurveyDate, DateOnly.FromDateTime(fixture.Create<DateTime>()))
+                        .With( x => x.StartTime, TimeOnly.FromDateTime(fixture.Create<DateTime>()))
+                        .With( x => x.EndTime, TimeOnly.FromDateTime(fixture.Create<DateTime>())) 
                         .Create();
         }
 
@@ -64,24 +65,6 @@ namespace MLDB.Domain.Tests
         {
             Assert.Throws<ArgumentException>( () => { 
                 var testSite = new Survey(fixture.Create<Guid>(), fixture.Create<string>()) { CreateTimestamp = DateTime.Now };
-            });
-        }
-
-        [Test]
-        public void StartTS_onlyAllowsUTC()
-        {
-            Assert.Throws<ArgumentException>( () => { 
-                var testSite = new Survey(fixture.Create<Guid>(), fixture.Create<string>());
-                testSite.StartTimeStamp = DateTime.Now;
-            });
-        }
-
-        [Test]
-        public void EndTS_onlyAllowsUTC()
-        {
-            Assert.Throws<ArgumentException>( () => { 
-                var testSite = new Survey(fixture.Create<Guid>(), fixture.Create<string>());
-                testSite.EndTimeStamp = DateTime.Now;
             });
         }
     }

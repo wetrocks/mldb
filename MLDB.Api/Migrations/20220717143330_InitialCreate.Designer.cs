@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MLDB.Api.Migrations
 {
     [DbContext(typeof(SiteSurveyContext))]
-    [Migration("20220715140522_InitialCreate")]
+    [Migration("20220717143330_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -92,14 +92,17 @@ namespace MLDB.Api.Migrations
                     b.Property<string>("CreateUserId")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("EndTimeStamp")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time without time zone");
 
                     b.Property<Guid>("SiteId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("StartTimeStamp")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<DateOnly>("SurveyDate")
+                        .HasColumnType("date");
 
                     b.Property<decimal>("TotalKg")
                         .HasColumnType("numeric");

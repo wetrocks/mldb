@@ -47,8 +47,9 @@ namespace MLDB.Infrastructure.Repositories
             }
 
             orig.CoordinatorName = survey.CoordinatorName;
-            orig.StartTimeStamp = survey.StartTimeStamp;
-            orig.EndTimeStamp = survey.EndTimeStamp;
+            orig.SurveyDate = survey.SurveyDate;
+            orig.StartTime = survey.StartTime;
+            orig.EndTime = survey.EndTime;
             orig.VolunteerCount = survey.VolunteerCount;
             orig.TotalKg = survey.TotalKg;
 

@@ -19,17 +19,11 @@ public class Survey {
     
     public string CoordinatorName{ get; set; }
 
-    private DateTime _startTs = DateTime.MinValue.ToUniversalTime();
-    public DateTime StartTimeStamp { 
-        get => _startTs;
-        set => _startTs = PropertyEnforcer.EnforceUtc(value);
-    }
+    public DateOnly SurveyDate { get; set; }
 
-    private DateTime _endTs = DateTime.MinValue.ToUniversalTime();
-    public DateTime EndTimeStamp{ 
-        get => _endTs;
-        set => _endTs = PropertyEnforcer.EnforceUtc(value);
-    }
+    public TimeOnly StartTime { get; set; }
+
+    public TimeOnly EndTime { get; set; }
 
     public Int16 VolunteerCount{ get; set; }
 

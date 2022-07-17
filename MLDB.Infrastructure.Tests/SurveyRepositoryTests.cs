@@ -17,7 +17,6 @@ using DotNet.Testcontainers.Configurations;
 namespace MLDB.Infrastructure.IntegrationTests
 {
     [TestOf(typeof(SurveyRepository))]
-    [Ignore("TestContaiers broken temporarily so can't reproduce issue happening in pipeline")]
     public class SurveyRepositoryTests
     {
         private DbContextOptions<SiteSurveyContext> ctxOptions;
@@ -82,9 +81,10 @@ namespace MLDB.Infrastructure.IntegrationTests
                 seedLitterItems = fixture.CreateMany<LitterItem>().ToList();
                 seedSurveyWithItems = fixture.Build<Survey>()
                                             .With( x => x.SiteId, seedSite.Id)
+                                            .With( x => x.SurveyDate, DateOnly.FromDateTime(fixture.Create<DateTime>()))
+                                            .With( x => x.StartTime, TimeOnly.FromDateTime(fixture.Create<DateTime>()))
+                                            .With( x => x.EndTime, TimeOnly.FromDateTime(fixture.Create<DateTime>()))
                                             .With( x => x.CreateTimestamp, DateTime.UtcNow)
-                                            .With( x => x.StartTimeStamp, DateTime.UtcNow)
-                                            .With( x => x.EndTimeStamp, DateTime.UtcNow)
                                             .Create();
                 seedSurveyWithItems.updateLitterItems(seedLitterItems);
                 seedCtx.Add(seedSurveyWithItems);
@@ -124,7 +124,11 @@ namespace MLDB.Infrastructure.IntegrationTests
 
             testSurvey.Should().BeEquivalentTo( seedSurveyWithItems, opts => opts
                               .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, new TimeSpan(0,0,0,1)))
-                              .When(info => info.Path.EndsWith("tamp")));
+                              .When(info => info.Path.EndsWith("tamp"))
+                              .Using<TimeOnly>( ctx => ctx.Subject.Ticks.Should().BeCloseTo(ctx.Expectation.Ticks, 100))
+                              .When( info => info.Path.EndsWith("Time"))
+            );
+                              
         }
 
         [Test]
@@ -148,7 +152,7 @@ namespace MLDB.Infrastructure.IntegrationTests
         public async Task insert_addsNewSurvey()
         {
             var testSurvey = new Survey(seedSite.Id, 
-                                        fixture.Create<string>());
+                                        fixture.Create<string>("User"));
 
             var created = await testRepo.insertAsync(testSurvey);
             testCtx.SaveChanges();
@@ -184,8 +188,9 @@ namespace MLDB.Infrastructure.IntegrationTests
             }
             
             testSurvey.CoordinatorName = fixture.Create<string>("coordinator");
-            testSurvey.StartTimeStamp = fixture.Create<DateTime>().ToUniversalTime();
-            testSurvey.EndTimeStamp = testSurvey.StartTimeStamp.AddHours(1);
+            testSurvey.SurveyDate = DateOnly.FromDateTime(fixture.Create<DateTime>());
+            testSurvey.StartTime = fixture.Create<TimeOnly>();
+            testSurvey.EndTime = testSurvey.StartTime.AddHours(1);
             testSurvey.VolunteerCount = fixture.Create<Int16>();
             testSurvey.TotalKg = fixture.Create<Decimal>();
 
@@ -196,7 +201,10 @@ namespace MLDB.Infrastructure.IntegrationTests
                 var testUpdated = assertCtx.Surveys.Find(seedSurvey.Id);
                 testUpdated.Should().BeEquivalentTo(testSurvey, opts => opts
                     .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, new TimeSpan(0,0,0,1)))
-                    .When(info => info.Path.EndsWith("TimeStamp")));
+                    .When(info => info.Path.EndsWith("Timestamp"))
+                    .Using<TimeOnly>( ctx => ctx.Subject.ToTimeSpan().Should().BeCloseTo(ctx.Expectation.ToTimeSpan(), new TimeSpan(0,0,0,1)))
+                    .When( info => info.Path.EndsWith("Time"))
+                );
            }
         }
 

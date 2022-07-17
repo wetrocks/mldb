@@ -9,7 +9,7 @@ RUN find . -name NuGet.Config -o -name "*.sln" -prune -o \! -type d \! -name \*.
 FROM mcr.microsoft.com/dotnet/sdk:6.0-jammy AS build
 WORKDIR /src
 COPY --from=projects-only /src .
-RUN dotnet restore --verbosity n;
+RUN dotnet restore;
 COPY . . 
 RUN dotnet build --no-restore
 

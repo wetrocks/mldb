@@ -78,6 +78,36 @@ namespace MLDB.Api.Tests.ServiceTests {
         }
 
         [Test]
+        public async Task createSiteSurvey_doesNotRequireStartTime() {
+            var testDTO = fixture.Build<SurveyDTO>()
+                                .Without( x => x.Id )
+                                .With( x => x.SurveyDate, "1970-04-20")
+                                .With(x => x.EndTime, "18:09:42")
+                                .Without( x => x.StartTime )
+                                .Without ( x => x.LitterItems )
+                                .Create();
+            
+             await testSvc.createSiteSurvey(TEST_USER_PRINCIPAL, fixture.Create<Guid>(), testDTO);
+
+             surveyRepo.Verify( x => x.insertAsync(It.IsAny<Survey>()));
+        }
+
+        [Test]
+        public async Task createSiteSurvey_doesNotRequireEndTime() {
+            var testDTO = fixture.Build<SurveyDTO>()
+                                .Without( x => x.Id )
+                                .With( x => x.SurveyDate, "1970-04-20")
+                                .With(x => x.StartTime, "18:09:42")
+                                .Without( x => x.EndTime )
+                                .Without ( x => x.LitterItems )
+                                .Create();
+            
+             await testSvc.createSiteSurvey(TEST_USER_PRINCIPAL, fixture.Create<Guid>(), testDTO);
+
+             surveyRepo.Verify( x => x.insertAsync(It.IsAny<Survey>()));
+        }
+
+        [Test]
         public async Task createSiteSurvey_insertsSurveyData() {
             var siteId = fixture.Create<Guid>();
             var testDTO = this.createTestSurveyDTO(fixture);
@@ -91,8 +121,9 @@ namespace MLDB.Api.Tests.ServiceTests {
             surveyRepo.Verify( x => x.insertAsync(It.IsAny<Survey>()));
             insertedSurvey.Id.Should().BeEmpty();
             insertedSurvey.SiteId.Should().Be(siteId);
-            insertedSurvey.StartTimeStamp.Should().Be(new DateTime(1970,4,20,16,20,09));
-            insertedSurvey.EndTimeStamp.Should().Be(new DateTime(1970,4,20,18,09,42));            
+            insertedSurvey.SurveyDate.Should().Be(new DateOnly(1970,4,20));
+            insertedSurvey.StartTime.Should().Be(new TimeOnly(16,20,09));
+            insertedSurvey.EndTime.Should().Be(new TimeOnly(18,09,42));            
             insertedSurvey.CoordinatorName.Should().Be(testDTO.Coordinator);
             insertedSurvey.VolunteerCount.Should().Be(testDTO.VolunteerCount);
             insertedSurvey.TotalKg.Should().Be(testDTO.TotalKg);
@@ -141,8 +172,9 @@ namespace MLDB.Api.Tests.ServiceTests {
             surveyRepo.Verify( x => x.updateAsync(It.IsAny<Survey>()));
             updatedSurvey.Id.Should().Be(surveyId);
             updatedSurvey.SiteId.Should().Be(siteId);
-            updatedSurvey.StartTimeStamp.Should().Be(new DateTime(1970,4,20,16,20,09));
-            updatedSurvey.EndTimeStamp.Should().Be(new DateTime(1970,4,20,18,09,42));            
+            updatedSurvey.SurveyDate.Should().Be(new DateOnly(1970,4,20));
+            updatedSurvey.StartTime.Should().Be(new TimeOnly(16,20,09));
+            updatedSurvey.EndTime.Should().Be(new TimeOnly(18,09,42));           
             updatedSurvey.CoordinatorName.Should().Be(testDTO.Coordinator);
             updatedSurvey.VolunteerCount.Should().Be(testDTO.VolunteerCount);
             updatedSurvey.TotalKg.Should().Be(testDTO.TotalKg);
