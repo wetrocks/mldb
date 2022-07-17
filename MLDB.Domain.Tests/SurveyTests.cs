@@ -22,6 +22,9 @@ namespace MLDB.Domain.Tests
         private Survey newSurvey() {
             return fixture.Build<Survey>()
                         .With( x => x.CreateTimestamp, DateTime.UtcNow)
+                        .With( x => x.SurveyDate, DateOnly.FromDateTime(fixture.Create<DateTime>()))
+                        .With( x => x.StartTime, TimeOnly.FromDateTime(fixture.Create<DateTime>()))
+                        .With( x => x.EndTime, TimeOnly.FromDateTime(fixture.Create<DateTime>())) 
                         .Create();
         }
 

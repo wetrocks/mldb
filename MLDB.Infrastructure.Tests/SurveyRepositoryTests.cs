@@ -201,7 +201,7 @@ namespace MLDB.Infrastructure.IntegrationTests
                 var testUpdated = assertCtx.Surveys.Find(seedSurvey.Id);
                 testUpdated.Should().BeEquivalentTo(testSurvey, opts => opts
                     .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, new TimeSpan(0,0,0,1)))
-                    .When(info => info.Path.EndsWith("TimeStamp"))
+                    .When(info => info.Path.EndsWith("Timestamp"))
                     .Using<TimeOnly>( ctx => ctx.Subject.ToTimeSpan().Should().BeCloseTo(ctx.Expectation.ToTimeSpan(), new TimeSpan(0,0,0,1)))
                     .When( info => info.Path.EndsWith("Time"))
                 );
