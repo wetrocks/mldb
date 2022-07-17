@@ -60,8 +60,14 @@ namespace MLDB.Api.Services
             survey.VolunteerCount = dto.VolunteerCount;
             survey.TotalKg = dto.TotalKg;
             survey.SurveyDate = DateOnly.ParseExact(dto.SurveyDate, "yyyy-MM-dd");
-            survey.StartTime = TimeOnly.ParseExact(dto.StartTime, "HH:mm:ss");
-            survey.EndTime = TimeOnly.ParseExact(dto.EndTime, "HH:mm:ss");
+            
+            if( !String.IsNullOrWhiteSpace(dto.StartTime) ) {
+                survey.StartTime = TimeOnly.ParseExact(dto.StartTime, "HH:mm:ss");
+            }
+
+            if( !String.IsNullOrWhiteSpace(dto.EndTime) ) {
+                survey.EndTime = TimeOnly.ParseExact(dto.EndTime, "HH:mm:ss");
+            }
  
             survey.updateLitterItems(dto.LitterItems.Select( x => new LitterItem(int.Parse(x.Key), x.Value)).ToList());
 

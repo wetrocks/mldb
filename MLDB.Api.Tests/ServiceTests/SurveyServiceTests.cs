@@ -78,6 +78,36 @@ namespace MLDB.Api.Tests.ServiceTests {
         }
 
         [Test]
+        public async Task createSiteSurvey_doesNotRequireStartTime() {
+            var testDTO = fixture.Build<SurveyDTO>()
+                                .Without( x => x.Id )
+                                .With( x => x.SurveyDate, "1970-04-20")
+                                .With(x => x.EndTime, "18:09:42")
+                                .Without( x => x.StartTime )
+                                .Without ( x => x.LitterItems )
+                                .Create();
+            
+             await testSvc.createSiteSurvey(TEST_USER_PRINCIPAL, fixture.Create<Guid>(), testDTO);
+
+             surveyRepo.Verify( x => x.insertAsync(It.IsAny<Survey>()));
+        }
+
+        [Test]
+        public async Task createSiteSurvey_doesNotRequireEndTime() {
+            var testDTO = fixture.Build<SurveyDTO>()
+                                .Without( x => x.Id )
+                                .With( x => x.SurveyDate, "1970-04-20")
+                                .With(x => x.StartTime, "18:09:42")
+                                .Without( x => x.EndTime )
+                                .Without ( x => x.LitterItems )
+                                .Create();
+            
+             await testSvc.createSiteSurvey(TEST_USER_PRINCIPAL, fixture.Create<Guid>(), testDTO);
+
+             surveyRepo.Verify( x => x.insertAsync(It.IsAny<Survey>()));
+        }
+
+        [Test]
         public async Task createSiteSurvey_insertsSurveyData() {
             var siteId = fixture.Create<Guid>();
             var testDTO = this.createTestSurveyDTO(fixture);
