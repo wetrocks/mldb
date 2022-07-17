@@ -38,6 +38,7 @@ stages:
         action: 'Run a Docker Compose command'
         dockerComposeCommand: 'run apitest'
     - task: PublishTestResults@2
+      condition: succeededOrFailed()
       inputs:
         testResultsFormat: 'JUnit'
         testResultsFiles: '**/newman-report.xml'
