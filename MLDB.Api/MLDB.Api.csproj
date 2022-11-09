@@ -17,7 +17,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="6.0.7" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.7" />
-    <PackageReference Include="NpgSql.EntityFrameworkCore.PostgreSQL" Version="6.0.6" />
+    <PackageReference Include="NpgSql.EntityFrameworkCore.PostgreSQL" Version="7.0.0" />
     <PackageReference Include="NpgSql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
     <PackageReference Include="Serilog.Enrichers.ClientInfo" Version="1.2.0" />
